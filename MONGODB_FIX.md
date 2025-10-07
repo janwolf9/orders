@@ -21,14 +21,14 @@
 2. Navigate to **Settings → Environment Variables**
 3. Ensure this variable exists:
    ```
-   MONGODB_URI=mongodb+srv://jan:wolf1234@cinema.l2msmhc.mongodb.net/Cinema?retryWrites=true&w=majority
+   MONGODB_URI=
    ```
 
 ### 3. **Enhanced Connection String (Optional)**
 
 For better reliability, use this enhanced connection string in Vercel:
 ```
-MONGODB_URI=mongodb+srv://jan:wolf1234@cinema.l2msmhc.mongodb.net/Cinema?retryWrites=true&w=majority&maxPoolSize=10&serverSelectionTimeoutMS=5000&socketTimeoutMS=45000
+MONGODB_URI=
 ```
 
 ### 4. **Redeploy**
@@ -59,7 +59,6 @@ Instead of allowing all IPs (0.0.0.0/0), you can add specific Vercel IP ranges:
 2. **Test connection string locally**:
    ```bash
    # Test with mongo shell
-   mongo "mongodb+srv://jan:wolf1234@cinema.l2msmhc.mongodb.net/Cinema"
    ```
 
 3. **Check Vercel logs**:
