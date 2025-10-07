@@ -64,7 +64,7 @@ In your Vercel project dashboard, go to **Settings > Environment Variables** and
 
 ```
 NODE_ENV=production
-MONGODB_URI=mongodb+srv://jan:wolf1234@cinema.l2msmhc.mongodb.net/Cinema?retryWrites=true&w=majority
+MONGODB_URI=
 JWT_SECRET=8f2a9c5e7b1d4f6a3e8c9b2f5a7d1e4b6c9f2a5e8b1d4f7a3e6c9b2f5a8d1e4b7c
 JWT_EXPIRES_IN=24h
 RATE_LIMIT_WINDOW_MS=900000
