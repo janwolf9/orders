@@ -316,7 +316,7 @@ function displayProducts(products) {
         <div class="product-card">
             <div class="product-image">
                 ${product.images && product.images.length > 0 
-                    ? `<img src="${API_BASE.replace('/api', '')}${product.images[0]}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover;">`
+                    ? `<img src="${product.images[0]}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover;">`
                     : '<i class="fas fa-image fa-3x"></i>'
                 }
             </div>
@@ -399,6 +399,13 @@ function showProductModal(productId = null) {
 
 function closeProductModal() {
     document.getElementById('productModal').style.display = 'none';
+    document.getElementById('productForm').reset();
+    
+    // Clear image preview
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+    }
 }
 
 async function loadProductData(productId) {
@@ -432,17 +439,52 @@ async function handleProductSubmit(e) {
     const productId = document.getElementById('productId').value;
     const isEdit = !!productId;
     
-    const formData = {
-        name: document.getElementById('productName').value,
-        description: document.getElementById('productDescription').value,
-        price: parseFloat(document.getElementById('productPrice').value),
-        stock: parseInt(document.getElementById('productStock').value),
-        category: document.getElementById('productCategory').value,
-        brand: document.getElementById('productBrand').value,
-        tags: document.getElementById('productTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
-    };
-    
     try {
+        // First, upload images if any are selected
+        const imageFiles = document.getElementById('productImages').files;
+        let imagePaths = [];
+        
+        if (imageFiles && imageFiles.length > 0) {
+            const uploadFormData = new FormData();
+            Array.from(imageFiles).forEach(file => {
+                uploadFormData.append('files', file);
+            });
+            
+            const uploadResponse = await fetch(`${API_BASE}/upload/multiple`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: uploadFormData
+            });
+            
+            if (uploadResponse.ok) {
+                const uploadData = await uploadResponse.json();
+                imagePaths = uploadData.files.map(file => file.url);
+                console.log('Images uploaded successfully:', imagePaths);
+            } else {
+                const uploadError = await uploadResponse.json();
+                throw new Error(uploadError.message || 'Failed to upload images');
+            }
+        }
+        
+        // Prepare product data
+        const productData = {
+            name: document.getElementById('productName').value,
+            description: document.getElementById('productDescription').value,
+            price: parseFloat(document.getElementById('productPrice').value),
+            stock: parseInt(document.getElementById('productStock').value),
+            category: document.getElementById('productCategory').value,
+            brand: document.getElementById('productBrand').value,
+            tags: document.getElementById('productTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
+        };
+        
+        // Add images if uploaded
+        if (imagePaths.length > 0) {
+            productData.images = imagePaths;
+        }
+        
+        // Create or update product
         const url = isEdit ? `${API_BASE}/products/${productId}` : `${API_BASE}/products`;
         const method = isEdit ? 'PUT' : 'POST';
         
@@ -452,7 +494,7 @@ async function handleProductSubmit(e) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${authToken}`
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(productData)
         });
         
         const data = await response.json();
@@ -1845,15 +1887,15 @@ function displayProductDetails(product) {
         imagesHtml = `
             <div class="product-gallery">
                 <div class="main-image">
-                    <img id="mainProductImage" src="${API_BASE.replace('/api', '')}${product.images[0]}" alt="${product.name}">
+                    <img id="mainProductImage" src="${product.images[0]}" alt="${product.name}">
                 </div>
                 ${product.images.length > 1 ? `
                     <div class="thumbnail-gallery">
                         ${product.images.map((image, index) => 
                             `<img class="thumbnail ${index === 0 ? 'active' : ''}" 
-                                 src="${API_BASE.replace('/api', '')}${image}" 
+                                 src="${image}" 
                                  alt="${product.name}" 
-                                 onclick="changeMainImage('${API_BASE.replace('/api', '')}${image}', this)">`
+                                 onclick="changeMainImage('${image}', this)">`
                         ).join('')}
                     </div>
                 ` : ''}
@@ -1966,4 +2008,51 @@ async function deleteProductFromDetails() {
     if (success) {
         showSection('products');
     }
+}
+
+// ===================
+// IMAGE PREVIEW FUNCTIONS
+// ===================
+
+// Preview selected images
+function previewImages(input) {
+    const container = document.getElementById('imagePreviewContainer');
+    container.innerHTML = '';
+    
+    if (input.files && input.files.length > 0) {
+        Array.from(input.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'image-preview-item';
+                previewDiv.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview ${index + 1}">
+                    <button type="button" class="remove-image-btn" onclick="removeImagePreview(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(previewDiv);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+}
+
+// Remove image from preview
+function removeImagePreview(index) {
+    const input = document.getElementById('productImages');
+    const dt = new DataTransfer();
+    
+    // Copy all files except the one to remove
+    Array.from(input.files).forEach((file, i) => {
+        if (i !== index) {
+            dt.items.add(file);
+        }
+    });
+    
+    // Update input files
+    input.files = dt.files;
+    
+    // Refresh preview
+    previewImages(input);
 }
