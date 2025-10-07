@@ -136,9 +136,14 @@ router.get('/:id', async (req, res) => {
 
 // @route   POST /api/products
 // @desc    Create new product
-// @access  Private
+// @access  Private/Admin
 router.post('/', auth, productValidation, async (req, res) => {
   try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin role required.' });
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -174,9 +179,14 @@ router.post('/', auth, productValidation, async (req, res) => {
 
 // @route   PUT /api/products/:id
 // @desc    Update product
-// @access  Private
+// @access  Private/Admin
 router.put('/:id', auth, productValidation, async (req, res) => {
   try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin role required.' });
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -189,11 +199,6 @@ router.put('/:id', auth, productValidation, async (req, res) => {
     
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
-    }
-
-    // Check if user is the creator or admin
-    if (product.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Access denied' });
     }
 
     const updateData = { ...req.body };
@@ -224,18 +229,18 @@ router.put('/:id', auth, productValidation, async (req, res) => {
 
 // @route   DELETE /api/products/:id
 // @desc    Delete product (soft delete)
-// @access  Private
+// @access  Private/Admin
 router.delete('/:id', auth, async (req, res) => {
   try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin role required.' });
+    }
+
     const product = await Product.findById(req.params.id);
     
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
-    }
-
-    // Check if user is the creator or admin
-    if (product.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Access denied' });
     }
 
     // Soft delete - just mark as inactive
@@ -254,11 +259,16 @@ router.delete('/:id', auth, async (req, res) => {
 
 // @route   PUT /api/products/:id/stock
 // @desc    Update product stock
-// @access  Private
+// @access  Private/Admin
 router.put('/:id/stock', auth, [
   body('stock').isInt({ min: 0 }).withMessage('Stock must be a non-negative integer')
 ], async (req, res) => {
   try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin role required.' });
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({

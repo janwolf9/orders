@@ -62,7 +62,97 @@ router.get('/', auth, [
       filter.status = req.query.status;
     }
 
-    const orders = await Order.find(filter)
+    // Order number search
+    if (req.query.orderNumber) {
+      filter.orderNumber = { $regex: req.query.orderNumber, $options: 'i' };
+    }
+
+    // Build query for user search
+    let query = Order.find(filter);
+
+    // User search (only for admin)
+    if (req.user.role === 'admin' && req.query.userSearch) {
+      const userSearchRegex = { $regex: req.query.userSearch, $options: 'i' };
+      query = Order.aggregate([
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        { $unwind: '$user' },
+        {
+          $match: {
+            $or: [
+              { 'user.firstName': userSearchRegex },
+              { 'user.lastName': userSearchRegex },
+              { 'user.username': userSearchRegex },
+              { 'user.email': userSearchRegex }
+            ]
+          }
+        },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'items.product',
+            foreignField: '_id',
+            as: 'productDetails'
+          }
+        },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit }
+      ]);
+
+      const orders = await query;
+      const totalOrders = await Order.aggregate([
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        { $unwind: '$user' },
+        {
+          $match: {
+            $or: [
+              { 'user.firstName': userSearchRegex },
+              { 'user.lastName': userSearchRegex },
+              { 'user.username': userSearchRegex },
+              { 'user.email': userSearchRegex }
+            ]
+          }
+        },
+        { $count: "total" }
+      ]);
+
+      const total = totalOrders[0]?.total || 0;
+
+      return res.json({
+        orders: orders.map(order => ({
+          ...order,
+          items: order.items.map(item => ({
+            ...item,
+            product: order.productDetails.find(p => p._id.toString() === item.product.toString()) || item.product
+          }))
+        })),
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalOrders: total,
+          hasNext: page * limit < total,
+          hasPrev: page > 1
+        }
+      });
+    }
+
+    const orders = await query
       .populate('user', 'username firstName lastName email')
       .populate('items.product', 'name price images')
       .sort({ createdAt: -1 })

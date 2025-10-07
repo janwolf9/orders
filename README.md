@@ -278,7 +278,56 @@ db.users.updateOne(
 3. Make changes with tests
 4. Submit pull request
 
-## 📄 License
+## �‍💼 Admin Panel
+
+The application includes a comprehensive admin panel for order management.
+
+### Creating Admin Users
+
+To promote a user to admin status:
+
+1. **Using the make-admin script:**
+   ```bash
+   cd backend
+   node make-admin.js <username>
+   ```
+
+2. **Manually in MongoDB:**
+   ```javascript
+   db.users.updateOne(
+     { username: "your_username" },
+     { $set: { role: "admin" } }
+   )
+   ```
+
+### Admin Features
+
+- **Order Management**: View all orders from all users
+- **Status Updates**: Change order status (pending → confirmed → processing → shipped → delivered)
+- **Order Filtering**: Filter by status, user, or order number
+- **Order Cancellation**: Cancel orders in pending/confirmed state
+- **Detailed Order View**: View complete order information including customer details
+- **Product Management**: Full CRUD operations for products (create, edit, delete, stock management)
+- **Exclusive Access**: Only admins can add, modify, or delete products
+
+### User Limitations
+
+Regular users (role: 'user') have the following restrictions:
+- **Cannot create products**: Only admins can add new products
+- **Cannot edit products**: Product modifications reserved for admins
+- **Cannot delete products**: Product removal restricted to admins
+- **Cannot manage stock**: Stock updates are admin-only
+- **Read-only access**: Users can only view and purchase products
+
+### Admin Access
+
+Once promoted to admin:
+1. Login to the application
+2. Admin link will appear in navigation
+3. Click "Admin" to access the admin panel
+4. Manage all orders from the admin dashboard
+
+## �📄 License
 
 This project is licensed under the ISC License.
 

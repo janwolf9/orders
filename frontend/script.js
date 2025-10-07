@@ -168,10 +168,24 @@ function updateNavigation() {
         navAuth.style.display = 'none';
         navUser.style.display = 'flex';
         document.getElementById('navUsername').textContent = currentUser.username;
+        
+        // Show/hide admin links and buttons based on role
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(element => {
+            element.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+        });
+        
         loadCart(); // Load cart when user is authenticated
     } else {
         navAuth.style.display = 'flex';
         navUser.style.display = 'none';
+        
+        // Hide admin elements when not logged in
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(element => {
+            element.style.display = 'none';
+        });
+        
         updateCartUI(); // Hide cart when not authenticated
     }
 }
@@ -203,6 +217,14 @@ function showSection(sectionName) {
                 break;
             case 'cart':
                 displayCartItems();
+                break;
+            case 'admin':
+                if (currentUser && currentUser.role === 'admin') {
+                    loadAllOrders();
+                } else {
+                    showAlert('Admin access required', 'error');
+                    showSection('dashboard');
+                }
                 break;
         }
     }
@@ -299,7 +321,7 @@ function displayProducts(products) {
                 }
             </div>
             <div class="product-info">
-                <div class="product-name">${product.name}</div>
+                <div class="product-name clickable" onclick="showProductDetails('${product._id}')">${product.name}</div>
                 <div class="product-price">€${product.price.toFixed(2)}</div>
                 <div class="product-description">${product.description.substring(0, 100)}...</div>
                 <div style="margin-bottom: 1rem;">
@@ -308,9 +330,13 @@ function displayProducts(products) {
                     <small><strong>Stock:</strong> ${product.stock}</small>
                 </div>
                 <div class="product-actions">
+                    <button class="btn btn-secondary btn-small" onclick="showProductDetails('${product._id}')">View Details</button>
                     <button class="btn btn-success" onclick="addToCart('${product._id}', 1)">Add to Cart</button>
-                    <button class="btn btn-primary" onclick="editProduct('${product._id}')">Edit</button>
-                    <button class="btn btn-danger" onclick="deleteProduct('${product._id}')">Delete</button>
+                    ${currentUser && currentUser.role === 'admin' ? 
+                        `<button class="btn btn-primary btn-small" onclick="editProduct('${product._id}')">Edit</button>
+                         <button class="btn btn-danger btn-small" onclick="deleteProduct('${product._id}')">Delete</button>` : 
+                        ''
+                    }
                 </div>
             </div>
         </div>
@@ -349,6 +375,11 @@ function displayProductsPagination(pagination) {
 
 // Product CRUD functions
 function showProductModal(productId = null) {
+    // Check if user is admin
+    if (!currentUser || currentUser.role !== 'admin') {
+        showAlert('Admin access required for product management', 'error');
+        return;
+    }
     const modal = document.getElementById('productModal');
     const title = document.getElementById('productModalTitle');
     const form = document.getElementById('productForm');
@@ -442,10 +473,21 @@ async function handleProductSubmit(e) {
 }
 
 function editProduct(productId) {
+    // Check if user is admin
+    if (!currentUser || currentUser.role !== 'admin') {
+        showAlert('Admin access required for product management', 'error');
+        return;
+    }
     showProductModal(productId);
 }
 
 async function deleteProduct(productId) {
+    // Check if user is admin
+    if (!currentUser || currentUser.role !== 'admin') {
+        showAlert('Admin access required for product management', 'error');
+        return;
+    }
+    
     if (!confirm('Are you sure you want to delete this product?')) return;
     
     showLoading(true);
@@ -459,13 +501,17 @@ async function deleteProduct(productId) {
         if (response.ok) {
             loadProducts(currentProductsPage);
             showAlert('Product deleted successfully!', 'success');
+            return true;
         } else {
             const data = await response.json();
             showAlert(data.message || 'Failed to delete product', 'error');
+            return false;
         }
+        return false;
     } catch (error) {
         console.error('Delete product error:', error);
         showAlert('Network error. Please try again.', 'error');
+        return false;
     } finally {
         showLoading(false);
     }
@@ -1480,3 +1526,444 @@ window.addEventListener('click', function(event) {
         closeCheckoutModal();
     }
 });
+
+// ===================
+// ADMIN FUNCTIONS
+// ===================
+
+let currentAdminPage = 1;
+
+// Load all orders for admin
+async function loadAllOrders(page = 1, filters = {}) {
+    if (!authToken || !currentUser || currentUser.role !== 'admin') return;
+    
+    showLoading(true);
+    currentAdminPage = page;
+    
+    try {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: '15',
+            ...filters
+        });
+        
+        const response = await fetch(`${API_BASE}/orders?${params}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            displayAdminOrders(data.orders);
+            displayAdminOrdersPagination(data.pagination);
+        } else {
+            showAlert('Failed to load orders', 'error');
+        }
+    } catch (error) {
+        console.error('Admin orders loading error:', error);
+        showAlert('Network error loading orders', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Display orders in admin table
+function displayAdminOrders(orders) {
+    const container = document.getElementById('adminOrdersTable');
+    
+    if (!orders || orders.length === 0) {
+        container.innerHTML = '<p class="text-center">No orders found.</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>User</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Items</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${orders.map(order => `
+                        <tr>
+                            <td>${order.orderNumber}</td>
+                            <td>
+                                ${order.user.firstName} ${order.user.lastName}<br>
+                                <small>(${order.user.username})</small>
+                            </td>
+                            <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                            <td>
+                                <select class="status-select" onchange="updateOrderStatus('${order._id}', this.value)" ${order.status === 'cancelled' || order.status === 'delivered' ? 'disabled' : ''}>
+                                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                            </td>
+                            <td>€${order.totalAmount.toFixed(2)}</td>
+                            <td>${order.items.length} items</td>
+                            <td>
+                                <button class="btn btn-primary btn-small" onclick="viewAdminOrder('${order._id}')">View</button>
+                                ${order.status === 'pending' || order.status === 'confirmed' ? 
+                                    `<button class="btn btn-danger btn-small" onclick="cancelAdminOrder('${order._id}')">Cancel</button>` : 
+                                    ''
+                                }
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// Display pagination for admin orders
+function displayAdminOrdersPagination(pagination) {
+    const container = document.getElementById('adminOrdersPagination');
+    
+    if (!pagination || pagination.totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    if (pagination.hasPrev) {
+        html += `<button onclick="loadAllOrders(${pagination.currentPage - 1})">Previous</button>`;
+    }
+    
+    for (let i = Math.max(1, pagination.currentPage - 2); 
+         i <= Math.min(pagination.totalPages, pagination.currentPage + 2); 
+         i++) {
+        html += `<button class="${i === pagination.currentPage ? 'active' : ''}" onclick="loadAllOrders(${i})">${i}</button>`;
+    }
+    
+    if (pagination.hasNext) {
+        html += `<button onclick="loadAllOrders(${pagination.currentPage + 1})">Next</button>`;
+    }
+    
+    container.innerHTML = html;
+}
+
+// Update order status (admin only)
+async function updateOrderStatus(orderId, newStatus) {
+    if (!authToken || !currentUser || currentUser.role !== 'admin') {
+        showAlert('Admin access required', 'error');
+        return;
+    }
+    
+    if (!confirm(`Change order status to "${newStatus}"?`)) return;
+    
+    try {
+        const requestBody = { status: newStatus };
+        
+        // Ask for tracking number if shipping
+        if (newStatus === 'shipped') {
+            const trackingNumber = prompt('Enter tracking number (optional):');
+            if (trackingNumber) {
+                requestBody.trackingNumber = trackingNumber;
+            }
+        }
+        
+        const response = await fetch(`${API_BASE}/orders/${orderId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (response.ok) {
+            loadAllOrders(currentAdminPage);
+            showAlert(`Order status updated to ${newStatus}`, 'success');
+        } else {
+            const data = await response.json();
+            showAlert(data.message || 'Failed to update order status', 'error');
+            // Reload to reset dropdown to original value
+            loadAllOrders(currentAdminPage);
+        }
+    } catch (error) {
+        console.error('Update order status error:', error);
+        showAlert('Network error', 'error');
+        loadAllOrders(currentAdminPage);
+    }
+}
+
+// View order details (admin)
+async function viewAdminOrder(orderId) {
+    try {
+        const response = await fetch(`${API_BASE}/orders/${orderId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const order = data.order;
+            
+            const itemsList = order.items.map(item => 
+                `- ${item.product.name} x${item.quantity} (€${item.price.toFixed(2)} each)`
+            ).join('\\n');
+            
+            alert(`Order Details:\\n\\nOrder #: ${order.orderNumber}\\nCustomer: ${order.user.firstName} ${order.user.lastName}\\nEmail: ${order.user.email}\\nStatus: ${order.status}\\nTotal: €${order.totalAmount.toFixed(2)}\\nDate: ${new Date(order.createdAt).toLocaleDateString()}\\n\\nItems:\\n${itemsList}\\n\\nShipping Address:\\n${order.shippingAddress.street}\\n${order.shippingAddress.city}, ${order.shippingAddress.postalCode}\\n${order.shippingAddress.country}${order.trackingNumber ? '\\n\\nTracking: ' + order.trackingNumber : ''}`);
+        } else {
+            showAlert('Failed to load order details', 'error');
+        }
+    } catch (error) {
+        console.error('View admin order error:', error);
+        showAlert('Network error', 'error');
+    }
+}
+
+// Cancel order (admin)
+async function cancelAdminOrder(orderId) {
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+    
+    try {
+        const response = await fetch(`${API_BASE}/orders/${orderId}/cancel`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            loadAllOrders(currentAdminPage);
+            showAlert('Order cancelled successfully!', 'success');
+        } else {
+            const data = await response.json();
+            showAlert(data.message || 'Failed to cancel order', 'error');
+        }
+    } catch (error) {
+        console.error('Cancel admin order error:', error);
+        showAlert('Network error', 'error');
+    }
+}
+
+// Filter orders in admin panel
+function filterAllOrders() {
+    const status = document.getElementById('adminStatusFilter').value;
+    const userFilter = document.getElementById('adminUserFilter').value;
+    const orderFilter = document.getElementById('adminOrderFilter').value;
+    
+    const filters = {};
+    if (status) filters.status = status;
+    if (userFilter) filters.userSearch = userFilter;
+    if (orderFilter) filters.orderNumber = orderFilter;
+    
+    loadAllOrders(1, filters);
+}
+
+// ===================
+// PRODUCT DETAILS FUNCTIONS
+// ===================
+
+let currentProductDetails = null;
+
+// Show product details
+async function showProductDetails(productId) {
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE}/products/${productId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentProductDetails = data.product;
+            displayProductDetails(data.product);
+            showSection('product-details');
+        } else {
+            showAlert('Failed to load product details', 'error');
+        }
+    } catch (error) {
+        console.error('Product details error:', error);
+        showAlert('Network error loading product details', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Display product details
+function displayProductDetails(product) {
+    const container = document.getElementById('productDetailsContent');
+    
+    // Format specifications
+    let specificationsHtml = '';
+    if (product.specifications && Object.keys(product.specifications).length > 0) {
+        specificationsHtml = `
+            <div class="product-specifications">
+                <h3>Specifications</h3>
+                <div class="specs-grid">
+                    ${Object.entries(product.specifications).map(([key, value]) => 
+                        `<div class="spec-item">
+                            <strong>${key}:</strong> ${value}
+                        </div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Format tags
+    let tagsHtml = '';
+    if (product.tags && product.tags.length > 0) {
+        tagsHtml = `
+            <div class="product-tags">
+                <h3>Tags</h3>
+                <div class="tags-container">
+                    ${product.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Format dimensions
+    let dimensionsHtml = '';
+    if (product.dimensions) {
+        dimensionsHtml = `
+            <div class="product-dimensions">
+                <h3>Dimensions</h3>
+                <p><strong>Length:</strong> ${product.dimensions.length || 'N/A'} cm</p>
+                <p><strong>Width:</strong> ${product.dimensions.width || 'N/A'} cm</p>
+                <p><strong>Height:</strong> ${product.dimensions.height || 'N/A'} cm</p>
+                ${product.weight ? `<p><strong>Weight:</strong> ${product.weight} kg</p>` : ''}
+            </div>
+        `;
+    }
+    
+    // Format images gallery
+    let imagesHtml = '';
+    if (product.images && product.images.length > 0) {
+        imagesHtml = `
+            <div class="product-gallery">
+                <div class="main-image">
+                    <img id="mainProductImage" src="${API_BASE.replace('/api', '')}${product.images[0]}" alt="${product.name}">
+                </div>
+                ${product.images.length > 1 ? `
+                    <div class="thumbnail-gallery">
+                        ${product.images.map((image, index) => 
+                            `<img class="thumbnail ${index === 0 ? 'active' : ''}" 
+                                 src="${API_BASE.replace('/api', '')}${image}" 
+                                 alt="${product.name}" 
+                                 onclick="changeMainImage('${API_BASE.replace('/api', '')}${image}', this)">`
+                        ).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    } else {
+        imagesHtml = `
+            <div class="product-gallery">
+                <div class="main-image no-image">
+                    <i class="fas fa-image fa-5x"></i>
+                    <p>No image available</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = `
+        <div class="product-details-container">
+            <div class="product-images-section">
+                ${imagesHtml}
+            </div>
+            
+            <div class="product-info-section">
+                <div class="product-header">
+                    <h1 class="product-title">${product.name}</h1>
+                    <div class="product-price-large">€${product.price.toFixed(2)}</div>
+                </div>
+                
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <strong>Category:</strong> ${product.category}
+                    </div>
+                    <div class="meta-item">
+                        <strong>Brand:</strong> ${product.brand}
+                    </div>
+                    <div class="meta-item">
+                        <strong>Stock:</strong> 
+                        <span class="stock-indicator ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                            ${product.stock > 0 ? `${product.stock} available` : 'Out of stock'}
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>Added:</strong> ${new Date(product.createdAt).toLocaleDateString()}
+                    </div>
+                </div>
+                
+                <div class="product-description-full">
+                    <h3>Description</h3>
+                    <p>${product.description}</p>
+                </div>
+                
+                <div class="quantity-selector">
+                    <label for="productQuantity"><strong>Quantity:</strong></label>
+                    <div class="quantity-input-group">
+                        <button type="button" onclick="changeQuantity(-1)" class="quantity-btn">-</button>
+                        <input type="number" id="productQuantity" value="1" min="1" max="${product.stock}">
+                        <button type="button" onclick="changeQuantity(1)" class="quantity-btn">+</button>
+                    </div>
+                </div>
+                
+                ${specificationsHtml}
+                ${dimensionsHtml}
+                ${tagsHtml}
+            </div>
+        </div>
+    `;
+}
+
+// Change main image in gallery
+function changeMainImage(imageSrc, thumbnail) {
+    const mainImage = document.getElementById('mainProductImage');
+    if (mainImage) {
+        mainImage.src = imageSrc;
+    }
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+    thumbnail.classList.add('active');
+}
+
+// Change quantity
+function changeQuantity(delta) {
+    const input = document.getElementById('productQuantity');
+    if (!input || !currentProductDetails) return;
+    
+    const currentValue = parseInt(input.value) || 1;
+    const newValue = Math.max(1, Math.min(currentProductDetails.stock, currentValue + delta));
+    input.value = newValue;
+}
+
+// Add to cart from details page
+function addToCartFromDetails() {
+    if (!currentProductDetails) return;
+    
+    const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
+    addToCart(currentProductDetails._id, quantity);
+}
+
+// Edit product from details page
+function editProductFromDetails() {
+    if (!currentProductDetails) return;
+    editProduct(currentProductDetails._id);
+}
+
+// Delete product from details page
+async function deleteProductFromDetails() {
+    if (!currentProductDetails) return;
+    
+    const success = await deleteProduct(currentProductDetails._id);
+    if (success) {
+        showSection('products');
+    }
+}
