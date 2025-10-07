@@ -78,12 +78,14 @@ async function handleRegister(e) {
     showLoading(true);
     
     const formData = {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value
+        firstName: document.getElementById('registerFirstName').value,
+        lastName: document.getElementById('registerLastName').value,
+        username: document.getElementById('registerUsername').value,
+        email: document.getElementById('registerEmail').value,
+        password: document.getElementById('registerPassword').value
     };
+    
+    console.log('Registration form data:', formData); // Debug log
     
     try {
         const response = await fetch(`${API_BASE}/auth/register`, {
@@ -157,7 +159,7 @@ function updateNavigation() {
     if (currentUser) {
         navAuth.style.display = 'none';
         navUser.style.display = 'flex';
-        document.getElementById('username').textContent = currentUser.username;
+        document.getElementById('navUsername').textContent = currentUser.username;
     } else {
         navAuth.style.display = 'flex';
         navUser.style.display = 'none';

@@ -12,6 +12,19 @@ const app = express();
 // Trust proxy for Vercel
 app.set('trust proxy', 1);
 
+// Database connection middleware for serverless
+app.use(async (req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && mongoose.connection.readyState !== 1) {
+    try {
+      await connectToMongoDB();
+    } catch (error) {
+      console.error('Failed to connect to database:', error);
+      return res.status(500).json({ message: 'Database connection failed' });
+    }
+  }
+  next();
+});
+
 // Security middleware
 app.use(helmet());
 
@@ -55,18 +68,76 @@ app.use(morgan('combined'));
 // Serve static files (uploads)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/webapp', {
+// MongoDB connection with enhanced configuration for Vercel
+const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('Connected to MongoDB');
-})
-.catch((error) => {
-  console.error('MongoDB connection error:', error);
-  process.exit(1);
-});
+  maxPoolSize: 10, // Maintain up to 10 socket connections
+  serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+  bufferCommands: true, // Enable mongoose buffering for serverless compatibility
+};
+
+// Global connection promise for serverless functions
+let cachedConnection = null;
+let connectionTimeout = null;
+
+// Function to connect to MongoDB
+async function connectToMongoDB() {
+  if (cachedConnection && mongoose.connection.readyState === 1) {
+    return cachedConnection;
+  }
+  
+  try {
+    cachedConnection = await mongoose.connect(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/webapp', 
+      mongooseOptions
+    );
+    console.log('MongoDB connected successfully');
+    
+    // Set timeout to close connection after inactivity in serverless
+    if (process.env.NODE_ENV === 'production') {
+      if (connectionTimeout) clearTimeout(connectionTimeout);
+      connectionTimeout = setTimeout(() => {
+        if (mongoose.connection.readyState === 1) {
+          mongoose.connection.close();
+          cachedConnection = null;
+          console.log('MongoDB connection closed due to inactivity');
+        }
+      }, 300000); // 5 minutes
+    }
+    
+    return cachedConnection;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    cachedConnection = null;
+    throw error;
+  }
+}
+
+// Handle connection for serverless environment
+if (process.env.NODE_ENV === 'production') {
+  // For Vercel serverless functions, we'll connect on first request
+  mongoose.connection.on('connected', () => {
+    console.log('MongoDB connected successfully');
+  });
+  
+  mongoose.connection.on('error', (error) => {
+    console.error('MongoDB connection error:', error);
+    cachedConnection = null;
+  });
+  
+  mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB disconnected');
+    cachedConnection = null;
+  });
+} else {
+  // For local development - connect immediately
+  connectToMongoDB().catch((error) => {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
+  });
+}
 
 // Import routes
 const authRoutes = require('./routes/auth');

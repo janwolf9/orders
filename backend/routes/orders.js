@@ -163,8 +163,14 @@ router.post('/', auth, orderValidation, async (req, res) => {
       await product.save();
     }
 
+    // Generate unique order number
+    const timestamp = Date.now().toString();
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    const orderNumber = `ORD-${timestamp}-${random}`;
+
     // Create order
     const order = new Order({
+      orderNumber,
       user: req.user._id,
       items: orderItems,
       totalAmount,

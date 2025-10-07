@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Test</title>
+</head>
+<body>
+    <h2>Test Registration Form</h2>
+    <form id="testForm">
+        <div>
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" value="Test" required>
+        </div>
+        <div>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" value="User" required>
+        </div>
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" value="testuser123" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="test@example.com" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="password123" required>
+        </div>
+        <button type="submit">Test Register</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api' 
+            : '/api';
+
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            console.log('Sending data:', formData);
+            document.getElementById('result').innerHTML = 'Sending: ' + JSON.stringify(formData, null, 2);
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                console.log('Response:', data);
+                
+                document.getElementById('result').innerHTML += '<br><br>Response: ' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML += '<br><br>Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

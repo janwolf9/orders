@@ -137,9 +137,30 @@ Test the following:
    - Check if your Vercel domain is in allowed origins
    - Verify environment variables are set
 
-2. **MongoDB Connection**:
-   - Ensure MongoDB Atlas allows connections from anywhere (0.0.0.0/0)
-   - Check connection string is correct
+2. **MongoDB Connection Issues** (Most Common):
+   
+   **Error**: `Could not connect to any servers in your MongoDB Atlas cluster`
+   
+   **Solution**: Configure MongoDB Atlas IP Whitelist
+   
+   1. **Go to MongoDB Atlas Dashboard**: https://cloud.mongodb.com
+   2. **Select your cluster** → **Network Access**
+   3. **Add IP Address**:
+      - Click "Add IP Address"
+      - Select "Allow Access from Anywhere" (0.0.0.0/0)
+      - Or add Vercel's IP ranges (recommended for security)
+   4. **Wait 2-3 minutes** for changes to propagate
+   
+   **Vercel Specific IPs** (Optional - more secure):
+   ```
+   76.76.19.0/24
+   76.223.126.88/29
+   ```
+   
+   **Alternative**: Update connection string to include retry options:
+   ```
+   mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority&maxPoolSize=10&serverSelectionTimeoutMS=5000&socketTimeoutMS=45000
+   ```
 
 3. **File Upload Issues**:
    - Vercel has a 50MB limit for serverless functions

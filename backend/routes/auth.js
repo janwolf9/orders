@@ -11,8 +11,9 @@ const registerValidation = [
   body('username')
     .isLength({ min: 3, max: 30 })
     .withMessage('Username must be between 3 and 30 characters')
-    .isAlphanumeric()
-    .withMessage('Username must contain only letters and numbers'),
+    .matches(/^[a-zA-Z0-9_.-]+$/)
+    .withMessage('Username can only contain letters, numbers, dots, dashes, and underscores')
+    .trim(),
   body('email')
     .isEmail()
     .withMessage('Please provide a valid email')
@@ -55,8 +56,11 @@ const generateToken = (userId) => {
 // @access  Public
 router.post('/register', registerValidation, async (req, res) => {
   try {
+    console.log('Registration request body:', req.body); // Debug log
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array()); // Debug log
       return res.status(400).json({ 
         message: 'Validation failed',
         errors: errors.array()
@@ -64,6 +68,7 @@ router.post('/register', registerValidation, async (req, res) => {
     }
 
     const { username, email, password, firstName, lastName } = req.body;
+    console.log('Extracted fields:', { username, email, firstName, lastName }); // Debug log
 
     // Check if user already exists
     const existingUser = await User.findOne({
