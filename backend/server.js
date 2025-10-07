@@ -146,6 +146,7 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const reviewRoutes = require('./routes/reviews');
 const uploadRoutes = require('./routes/uploads');
+const cartRoutes = require('./routes/cart');
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -154,6 +155,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

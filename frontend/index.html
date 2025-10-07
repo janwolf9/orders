@@ -19,6 +19,15 @@
                 <a href="#" class="nav-link" onclick="showSection('products')">Products</a>
                 <a href="#" class="nav-link" onclick="showSection('orders')">Orders</a>
                 <a href="#" class="nav-link" onclick="showSection('reviews')">Reviews</a>
+                <div class="nav-cart" id="navCart" style="display: none;">
+                    <a href="#" class="nav-link cart-link" onclick="showSection('cart')">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="cart-count">0</span>
+                    </a>
+                </div>
+                <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <div class="nav-user" id="navUser" style="display: none;">
                     <span id="navUsername"></span>
                     <button onclick="logout()" class="btn btn-secondary">Logout</button>
@@ -166,9 +175,38 @@
 
         <!-- Reviews Section -->
         <section id="reviews" class="section">
-            <h2>Reviews</h2>
+            <div class="section-header">
+                <h2>Reviews</h2>
+                <button onclick="showReviewModal()" class="btn btn-primary">Add Review</button>
+            </div>
             <div id="reviewsContainer"></div>
             <div id="reviewsPagination" class="pagination"></div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="section">
+            <div class="section-header">
+                <h2>Shopping Cart</h2>
+                <button onclick="clearCart()" class="btn btn-danger" id="clearCartBtn" style="display: none;">Clear Cart</button>
+            </div>
+            
+            <div id="cartContainer">
+                <div id="cartItems"></div>
+                <div id="cartSummary" class="cart-summary" style="display: none;">
+                    <div class="summary-row">
+                        <span>Total Items:</span>
+                        <span id="summaryTotalItems">0</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total Amount:</span>
+                        <span id="summaryTotalAmount">€0.00</span>
+                    </div>
+                    <div class="cart-actions">
+                        <button onclick="showCheckoutModal()" class="btn btn-primary btn-large">Checkout</button>
+                        <button onclick="showSection('products')" class="btn btn-secondary">Continue Shopping</button>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 
@@ -312,6 +350,136 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary">Create Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+            <h2 id="reviewModalTitle">Add Review</h2>
+            <form id="reviewForm">
+                <input type="hidden" id="reviewId">
+                <div class="form-group">
+                    <label for="reviewProduct">Product:</label>
+                    <select id="reviewProduct" required>
+                        <option value="">Select Product</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reviewRating">Rating:</label>
+                    <div class="rating-input">
+                        <input type="radio" id="star5" name="reviewRating" value="5">
+                        <label for="star5">⭐⭐⭐⭐⭐</label>
+                        <input type="radio" id="star4" name="reviewRating" value="4">
+                        <label for="star4">⭐⭐⭐⭐</label>
+                        <input type="radio" id="star3" name="reviewRating" value="3">
+                        <label for="star3">⭐⭐⭐</label>
+                        <input type="radio" id="star2" name="reviewRating" value="2">
+                        <label for="star2">⭐⭐</label>
+                        <input type="radio" id="star1" name="reviewRating" value="1">
+                        <label for="star1">⭐</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewTitle">Title:</label>
+                    <input type="text" id="reviewTitle" maxlength="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="reviewComment">Comment:</label>
+                    <textarea id="reviewComment" maxlength="1000" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="reviewImages">Images (optional):</label>
+                    <input type="file" id="reviewImages" multiple accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Review</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCheckoutModal()">&times;</span>
+            <h2>Checkout</h2>
+            <form id="checkoutForm">
+                <h3>Shipping Address</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="checkoutShippingStreet">Street:</label>
+                        <input type="text" id="checkoutShippingStreet" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutShippingCity">City:</label>
+                        <input type="text" id="checkoutShippingCity" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="checkoutShippingPostal">Postal Code:</label>
+                        <input type="text" id="checkoutShippingPostal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutShippingCountry">Country:</label>
+                        <input type="text" id="checkoutShippingCountry" required>
+                    </div>
+                </div>
+
+                <h3>Billing Address</h3>
+                <label>
+                    <input type="checkbox" id="checkoutSameAsShipping" onchange="toggleCheckoutBillingAddress()">
+                    Same as shipping address
+                </label>
+                <div id="checkoutBillingAddressFields">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="checkoutBillingStreet">Street:</label>
+                            <input type="text" id="checkoutBillingStreet" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkoutBillingCity">City:</label>
+                            <input type="text" id="checkoutBillingCity" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="checkoutBillingPostal">Postal Code:</label>
+                            <input type="text" id="checkoutBillingPostal" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkoutBillingCountry">Country:</label>
+                            <input type="text" id="checkoutBillingCountry" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="checkoutPaymentMethod">Payment Method:</label>
+                    <select id="checkoutPaymentMethod" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="credit_card">Credit Card</option>
+                        <option value="debit_card">Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="cash_on_delivery">Cash on Delivery</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="checkoutNotes">Notes:</label>
+                    <textarea id="checkoutNotes" placeholder="Optional notes..."></textarea>
+                </div>
+
+                <div class="checkout-summary">
+                    <h3>Order Summary</h3>
+                    <div id="checkoutItems"></div>
+                    <div class="checkout-total">
+                        <strong>Total: €<span id="checkoutTotal">0.00</span></strong>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">Place Order</button>
             </form>
         </div>
     </div>

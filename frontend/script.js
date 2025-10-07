@@ -11,6 +11,8 @@ let currentReviewsPage = 1;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    loadTheme();
+    
     if (authToken) {
         verifyToken();
     } else {
@@ -34,6 +36,12 @@ function setupEventListeners() {
     
     // Order form
     document.getElementById('orderForm').addEventListener('submit', handleOrderSubmit);
+    
+    // Review form
+    document.getElementById('reviewForm').addEventListener('submit', handleReviewSubmit);
+    
+    // Checkout form
+    document.getElementById('checkoutForm').addEventListener('submit', handleCheckoutSubmit);
 }
 
 // Authentication functions
@@ -160,9 +168,11 @@ function updateNavigation() {
         navAuth.style.display = 'none';
         navUser.style.display = 'flex';
         document.getElementById('navUsername').textContent = currentUser.username;
+        loadCart(); // Load cart when user is authenticated
     } else {
         navAuth.style.display = 'flex';
         navUser.style.display = 'none';
+        updateCartUI(); // Hide cart when not authenticated
     }
 }
 
@@ -190,6 +200,9 @@ function showSection(sectionName) {
                 break;
             case 'reviews':
                 loadReviews();
+                break;
+            case 'cart':
+                displayCartItems();
                 break;
         }
     }
@@ -295,6 +308,7 @@ function displayProducts(products) {
                     <small><strong>Stock:</strong> ${product.stock}</small>
                 </div>
                 <div class="product-actions">
+                    <button class="btn btn-success" onclick="addToCart('${product._id}', 1)">Add to Cart</button>
                     <button class="btn btn-primary" onclick="editProduct('${product._id}')">Edit</button>
                     <button class="btn btn-danger" onclick="deleteProduct('${product._id}')">Delete</button>
                 </div>
@@ -846,6 +860,10 @@ function displayReviews(reviews) {
                 <button class="btn btn-secondary" onclick="markHelpful('${review._id}')">
                     Helpful (${review.helpful})
                 </button>
+                ${currentUser && review.user._id === currentUser.id ? 
+                    `<button class="btn btn-primary" onclick="editReview('${review._id}')">Edit</button>` : 
+                    ''
+                }
                 ${currentUser && (review.user._id === currentUser.id || currentUser.role === 'admin') ? 
                     `<button class="btn btn-danger" onclick="deleteReview('${review._id}')">Delete</button>` : 
                     ''
@@ -949,10 +967,502 @@ function showAlert(message, type = 'info') {
     }
 }
 
+// Review modal functions
+async function showReviewModal(reviewId = null) {
+    const modal = document.getElementById('reviewModal');
+    const title = document.getElementById('reviewModalTitle');
+    const form = document.getElementById('reviewForm');
+    
+    form.reset();
+    document.getElementById('reviewId').value = reviewId || '';
+    
+    if (reviewId) {
+        title.textContent = 'Edit Review';
+        await loadReviewData(reviewId);
+    } else {
+        title.textContent = 'Add Review';
+        await loadProductsForReview();
+    }
+    
+    modal.style.display = 'block';
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').style.display = 'none';
+}
+
+async function loadProductsForReview() {
+    try {
+        const response = await fetch(`${API_BASE}/products?limit=50`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const select = document.getElementById('reviewProduct');
+            
+            select.innerHTML = '<option value="">Select Product</option>';
+            data.products.forEach(product => {
+                select.innerHTML += `<option value="${product._id}">${product.name}</option>`;
+            });
+        }
+    } catch (error) {
+        console.error('Load products for review error:', error);
+    }
+}
+
+async function loadReviewData(reviewId) {
+    try {
+        const response = await fetch(`${API_BASE}/reviews/${reviewId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const review = data.review;
+            
+            document.getElementById('reviewProduct').value = review.product._id;
+            document.querySelector(`input[name="reviewRating"][value="${review.rating}"]`).checked = true;
+            document.getElementById('reviewTitle').value = review.title;
+            document.getElementById('reviewComment').value = review.comment;
+        }
+    } catch (error) {
+        console.error('Load review error:', error);
+        showAlert('Failed to load review data', 'error');
+    }
+}
+
+async function handleReviewSubmit(e) {
+    e.preventDefault();
+    showLoading(true);
+    
+    const reviewId = document.getElementById('reviewId').value;
+    const isEdit = !!reviewId;
+    
+    const rating = document.querySelector('input[name="reviewRating"]:checked');
+    if (!rating) {
+        showAlert('Please select a rating', 'error');
+        showLoading(false);
+        return;
+    }
+    
+    const formData = {
+        product: document.getElementById('reviewProduct').value,
+        rating: parseInt(rating.value),
+        title: document.getElementById('reviewTitle').value,
+        comment: document.getElementById('reviewComment').value
+    };
+    
+    // Handle images if uploaded
+    const imageFiles = document.getElementById('reviewImages').files;
+    if (imageFiles.length > 0) {
+        try {
+            const images = await uploadReviewImages(imageFiles);
+            formData.images = images;
+        } catch (error) {
+            showAlert('Failed to upload images', 'error');
+            showLoading(false);
+            return;
+        }
+    }
+    
+    try {
+        const url = isEdit ? `${API_BASE}/reviews/${reviewId}` : `${API_BASE}/reviews`;
+        const method = isEdit ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            closeReviewModal();
+            loadReviews(currentReviewsPage);
+            showAlert(`Review ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
+        } else {
+            showAlert(data.message || 'Failed to save review', 'error');
+        }
+    } catch (error) {
+        console.error('Review submit error:', error);
+        showAlert('Network error. Please try again.', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function uploadReviewImages(files) {
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+    }
+    
+    const response = await fetch(`${API_BASE}/upload/multiple`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authToken}` },
+        body: formData
+    });
+    
+    if (response.ok) {
+        const data = await response.json();
+        return data.files.map(file => file.url);
+    } else {
+        throw new Error('Upload failed');
+    }
+}
+
+function editReview(reviewId) {
+    showReviewModal(reviewId);
+}
+
+// Cart functions
+let currentCart = null;
+
+// Load cart when user logs in
+async function loadCart() {
+    if (!authToken) return;
+    
+    try {
+        const response = await fetch(`${API_BASE}/cart`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentCart = data.cart;
+            updateCartUI();
+        }
+    } catch (error) {
+        console.error('Load cart error:', error);
+    }
+}
+
+// Update cart UI elements
+function updateCartUI() {
+    const cartCount = document.getElementById('cartCount');
+    const navCart = document.getElementById('navCart');
+    
+    if (currentCart && currentUser) {
+        navCart.style.display = 'block';
+        cartCount.textContent = currentCart.totalItems || 0;
+        cartCount.style.display = currentCart.totalItems > 0 ? 'inline' : 'none';
+    } else {
+        navCart.style.display = 'none';
+    }
+}
+
+// Add item to cart
+async function addToCart(productId, quantity = 1) {
+    if (!authToken) {
+        showAlert('Please login to add items to cart', 'error');
+        return;
+    }
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE}/cart/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ productId, quantity })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            currentCart = data.cart;
+            updateCartUI();
+            showAlert('Item added to cart!', 'success');
+        } else {
+            showAlert(data.message || 'Failed to add item to cart', 'error');
+        }
+    } catch (error) {
+        console.error('Add to cart error:', error);
+        showAlert('Network error. Please try again.', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Display cart items
+function displayCartItems() {
+    const container = document.getElementById('cartItems');
+    const summary = document.getElementById('cartSummary');
+    const clearBtn = document.getElementById('clearCartBtn');
+    
+    if (!currentCart || currentCart.items.length === 0) {
+        container.innerHTML = '<div class="empty-cart"><i class="fas fa-shopping-cart fa-3x"></i><p>Your cart is empty</p><button onclick="showSection(\'products\')" class="btn btn-primary">Start Shopping</button></div>';
+        summary.style.display = 'none';
+        clearBtn.style.display = 'none';
+        return;
+    }
+    
+    container.innerHTML = currentCart.items.map(item => `
+        <div class="cart-item">
+            <div class="cart-item-image">
+                ${item.product.images && item.product.images.length > 0 
+                    ? `<img src="${API_BASE.replace('/api', '')}${item.product.images[0]}" alt="${item.product.name}">`
+                    : '<i class="fas fa-image fa-2x"></i>'
+                }
+            </div>
+            <div class="cart-item-details">
+                <h4>${item.product.name}</h4>
+                <p class="cart-item-price">€${item.price.toFixed(2)} each</p>
+                <p class="cart-item-stock">Stock: ${item.product.stock}</p>
+            </div>
+            <div class="cart-item-controls">
+                <div class="quantity-controls">
+                    <button onclick="updateCartQuantity('${item._id}', ${item.quantity - 1})" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="updateCartQuantity('${item._id}', ${item.quantity + 1})" ${item.quantity >= item.product.stock ? 'disabled' : ''}>+</button>
+                </div>
+                <p class="item-total">€${(item.price * item.quantity).toFixed(2)}</p>
+                <button onclick="removeFromCart('${item._id}')" class="btn btn-danger btn-small">Remove</button>
+            </div>
+        </div>
+    `).join('');
+    
+    // Update summary
+    document.getElementById('summaryTotalItems').textContent = currentCart.totalItems;
+    document.getElementById('summaryTotalAmount').textContent = `€${currentCart.totalAmount.toFixed(2)}`;
+    
+    summary.style.display = 'block';
+    clearBtn.style.display = 'block';
+}
+
+// Update cart item quantity
+async function updateCartQuantity(itemId, newQuantity) {
+    if (newQuantity < 1) return;
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE}/cart/update/${itemId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ quantity: newQuantity })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            currentCart = data.cart;
+            updateCartUI();
+            displayCartItems();
+        } else {
+            showAlert(data.message || 'Failed to update cart', 'error');
+        }
+    } catch (error) {
+        console.error('Update cart error:', error);
+        showAlert('Network error', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Remove item from cart
+async function removeFromCart(itemId) {
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE}/cart/remove/${itemId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            currentCart = data.cart;
+            updateCartUI();
+            displayCartItems();
+            showAlert('Item removed from cart', 'success');
+        } else {
+            showAlert(data.message || 'Failed to remove item', 'error');
+        }
+    } catch (error) {
+        console.error('Remove from cart error:', error);
+        showAlert('Network error', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Clear entire cart
+async function clearCart() {
+    if (!confirm('Are you sure you want to clear your cart?')) return;
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE}/cart/clear`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            currentCart = data.cart;
+            updateCartUI();
+            displayCartItems();
+            showAlert('Cart cleared', 'success');
+        } else {
+            showAlert('Failed to clear cart', 'error');
+        }
+    } catch (error) {
+        console.error('Clear cart error:', error);
+        showAlert('Network error', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Checkout modal functions
+function showCheckoutModal() {
+    if (!currentCart || currentCart.items.length === 0) {
+        showAlert('Your cart is empty', 'error');
+        return;
+    }
+    
+    const modal = document.getElementById('checkoutModal');
+    displayCheckoutItems();
+    modal.style.display = 'block';
+}
+
+function closeCheckoutModal() {
+    document.getElementById('checkoutModal').style.display = 'none';
+    document.getElementById('checkoutForm').reset();
+}
+
+function displayCheckoutItems() {
+    const container = document.getElementById('checkoutItems');
+    const totalSpan = document.getElementById('checkoutTotal');
+    
+    container.innerHTML = currentCart.items.map(item => `
+        <div class="checkout-item">
+            <span>${item.product.name} × ${item.quantity}</span>
+            <span>€${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+    `).join('');
+    
+    totalSpan.textContent = currentCart.totalAmount.toFixed(2);
+}
+
+function toggleCheckoutBillingAddress() {
+    const sameAsShipping = document.getElementById('checkoutSameAsShipping').checked;
+    const billingFields = document.getElementById('checkoutBillingAddressFields');
+    
+    if (sameAsShipping) {
+        billingFields.style.display = 'none';
+        // Copy shipping to billing
+        document.getElementById('checkoutBillingStreet').value = document.getElementById('checkoutShippingStreet').value;
+        document.getElementById('checkoutBillingCity').value = document.getElementById('checkoutShippingCity').value;
+        document.getElementById('checkoutBillingPostal').value = document.getElementById('checkoutShippingPostal').value;
+        document.getElementById('checkoutBillingCountry').value = document.getElementById('checkoutShippingCountry').value;
+    } else {
+        billingFields.style.display = 'block';
+    }
+}
+
+// Checkout form submission
+async function handleCheckoutSubmit(e) {
+    e.preventDefault();
+    showLoading(true);
+    
+    const checkoutData = {
+        shippingAddress: {
+            street: document.getElementById('checkoutShippingStreet').value,
+            city: document.getElementById('checkoutShippingCity').value,
+            postalCode: document.getElementById('checkoutShippingPostal').value,
+            country: document.getElementById('checkoutShippingCountry').value
+        },
+        billingAddress: {
+            street: document.getElementById('checkoutBillingStreet').value,
+            city: document.getElementById('checkoutBillingCity').value,
+            postalCode: document.getElementById('checkoutBillingPostal').value,
+            country: document.getElementById('checkoutBillingCountry').value
+        },
+        paymentMethod: document.getElementById('checkoutPaymentMethod').value,
+        notes: document.getElementById('checkoutNotes').value
+    };
+    
+    try {
+        const response = await fetch(`${API_BASE}/cart/checkout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(checkoutData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            closeCheckoutModal();
+            currentCart = null;
+            updateCartUI();
+            displayCartItems();
+            showAlert('Order placed successfully!', 'success');
+            showSection('orders');
+        } else {
+            showAlert(data.message || 'Checkout failed', 'error');
+        }
+    } catch (error) {
+        console.error('Checkout error:', error);
+        showAlert('Network error', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Theme toggle function
+function toggleTheme() {
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const icon = themeToggle.querySelector('i');
+    
+    body.classList.toggle('dark-theme');
+    const isDark = body.classList.contains('dark-theme');
+    
+    // Update icon
+    icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    
+    // Save preference
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+// Load theme preference
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const icon = themeToggle.querySelector('i');
+    
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-theme');
+        icon.className = 'fas fa-sun';
+    }
+}
+
 // Close modal when clicking outside
 window.addEventListener('click', function(event) {
     const productModal = document.getElementById('productModal');
     const orderModal = document.getElementById('orderModal');
+    const reviewModal = document.getElementById('reviewModal');
+    const checkoutModal = document.getElementById('checkoutModal');
     
     if (event.target === productModal) {
         closeProductModal();
@@ -960,5 +1470,13 @@ window.addEventListener('click', function(event) {
     
     if (event.target === orderModal) {
         closeOrderModal();
+    }
+    
+    if (event.target === reviewModal) {
+        closeReviewModal();
+    }
+    
+    if (event.target === checkoutModal) {
+        closeCheckoutModal();
     }
 });
