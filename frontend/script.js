@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (authToken) {
         verifyToken();
     } else {
-        showSection('login');
+        updateNavigation(); // Update navigation for non-logged users
+        showSection('products'); // Show products instead of login for non-logged users
     }
     
     // Add event listeners
@@ -163,11 +164,24 @@ function logout() {
 function updateNavigation() {
     const navAuth = document.getElementById('navAuth');
     const navUser = document.getElementById('navUser');
+    const navCart = document.getElementById('navCart');
+    
+    // Get all navigation links except Products
+    const navLinks = document.querySelectorAll('.nav-link');
     
     if (currentUser) {
         navAuth.style.display = 'none';
         navUser.style.display = 'flex';
+        navCart.style.display = 'block';
         document.getElementById('navUsername').textContent = currentUser.username;
+        
+        // Show all navigation links when logged in
+        navLinks.forEach(link => {
+            const linkText = link.textContent.trim();
+            if (linkText !== 'Products') {
+                link.style.display = 'block';
+            }
+        });
         
         // Show/hide admin links and buttons based on role
         const adminElements = document.querySelectorAll('.admin-only');
@@ -179,6 +193,17 @@ function updateNavigation() {
     } else {
         navAuth.style.display = 'flex';
         navUser.style.display = 'none';
+        navCart.style.display = 'none';
+        
+        // Hide all navigation links except Products when not logged in
+        navLinks.forEach(link => {
+            const linkText = link.textContent.trim();
+            if (linkText === 'Products') {
+                link.style.display = 'block';
+            } else {
+                link.style.display = 'none';
+            }
+        });
         
         // Hide admin elements when not logged in
         const adminElements = document.querySelectorAll('.admin-only');
@@ -191,6 +216,15 @@ function updateNavigation() {
 }
 
 function showSection(sectionName) {
+    // Check if user is trying to access protected sections without being logged in
+    const protectedSections = ['dashboard', 'orders', 'reviews', 'admin', 'cart'];
+    
+    if (!currentUser && protectedSections.includes(sectionName)) {
+        showAlert('Please log in to access this section', 'error');
+        showSection('login');
+        return;
+    }
+    
     // Hide all sections
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
@@ -235,46 +269,190 @@ async function loadDashboardData() {
     if (!authToken) return;
     
     try {
-        // Load dashboard statistics (these would be separate endpoints in a real app)
-        const [productsRes, ordersRes, reviewsRes] = await Promise.all([
-            fetch(`${API_BASE}/products?limit=1`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            }),
-            fetch(`${API_BASE}/orders?limit=1`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            }),
-            fetch(`${API_BASE}/reviews?limit=1`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            })
-        ]);
+        const isAdmin = currentUser?.role === 'admin';
         
-        if (productsRes.ok) {
-            const productsData = await productsRes.json();
-            document.getElementById('totalProducts').textContent = productsData.pagination?.totalProducts || 0;
+        // Update dashboard labels based on user role
+        updateDashboardLabels(isAdmin);
+        updateSectionTitles(isAdmin);
+        updateDashboardClickHandlers(isAdmin);
+        
+        if (isAdmin) {
+            // Admin sees all data
+            const [productsRes, ordersRes, reviewsRes] = await Promise.all([
+                fetch(`${API_BASE}/products?limit=1`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                }),
+                fetch(`${API_BASE}/orders?limit=1`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                }),
+                fetch(`${API_BASE}/reviews?limit=1`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                })
+            ]);
+            
+            if (productsRes.ok) {
+                const productsData = await productsRes.json();
+                document.getElementById('totalProducts').textContent = productsData.pagination?.totalProducts || 0;
+            }
+            
+            if (ordersRes.ok) {
+                const ordersData = await ordersRes.json();
+                document.getElementById('totalOrders').textContent = ordersData.pagination?.totalOrders || 0;
+            }
+            
+            if (reviewsRes.ok) {
+                const reviewsData = await reviewsRes.json();
+                document.getElementById('totalReviews').textContent = reviewsData.pagination?.totalReviews || 0;
+            }
+            
+            document.getElementById('totalUsers').textContent = '50+';
+        } else {
+            // Regular user sees personalized data
+            const [myOrdersRes, myReviewsRes, cartRes] = await Promise.all([
+                fetch(`${API_BASE}/orders/my?limit=1`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                }),
+                fetch(`${API_BASE}/reviews/my?limit=1`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                }),
+                fetch(`${API_BASE}/cart`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                })
+            ]);
+            
+            // Get cart items count
+            let cartItemsCount = 0;
+            if (cartRes.ok) {
+                const cartData = await cartRes.json();
+                cartItemsCount = cartData.cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
+            }
+            
+            // Get order statistics
+            let totalOrders = 0;
+            let totalSpent = 0;
+            if (myOrdersRes.ok) {
+                const ordersRes = await fetch(`${API_BASE}/orders/my`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (ordersRes.ok) {
+                    const ordersData = await ordersRes.json();
+                    totalOrders = ordersData.pagination?.totalOrders || 0;
+                    totalSpent = ordersData.orders?.reduce((sum, order) => sum + (order.totalAmount || 0), 0) || 0;
+                }
+            }
+            
+            // Get reviews count
+            let totalReviews = 0;
+            if (myReviewsRes.ok) {
+                const reviewsData = await myReviewsRes.json();
+                totalReviews = reviewsData.pagination?.totalReviews || 0;
+            }
+            
+            // Update dashboard with user-relevant data
+            document.getElementById('totalProducts').textContent = cartItemsCount;
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalReviews').textContent = totalReviews;
+            document.getElementById('totalUsers').textContent = `€${totalSpent.toFixed(2)}`;
         }
-        
-        if (ordersRes.ok) {
-            const ordersData = await ordersRes.json();
-            document.getElementById('totalOrders').textContent = ordersData.pagination?.totalOrders || 0;
-        }
-        
-        if (reviewsRes.ok) {
-            const reviewsData = await reviewsRes.json();
-            document.getElementById('totalReviews').textContent = reviewsData.pagination?.totalReviews || 0;
-        }
-        
-        // For users count, we would need an admin endpoint
-        document.getElementById('totalUsers').textContent = currentUser?.role === 'admin' ? '50+' : '1';
         
     } catch (error) {
         console.error('Dashboard loading error:', error);
     }
 }
 
+// Update dashboard labels based on user role
+function updateDashboardLabels(isAdmin) {
+    const dashboardCards = document.querySelectorAll('.dashboard-card');
+    
+    if (!isAdmin) {
+        // Update labels for regular users with more relevant info
+        if (dashboardCards[0]) {
+            dashboardCards[0].querySelector('i').className = 'fas fa-shopping-cart';
+            dashboardCards[0].querySelector('p').textContent = 'Cart Items';
+        }
+        if (dashboardCards[1]) {
+            dashboardCards[1].querySelector('i').className = 'fas fa-shopping-bag';
+            dashboardCards[1].querySelector('p').textContent = 'My Orders';
+        }
+        if (dashboardCards[2]) {
+            dashboardCards[2].querySelector('i').className = 'fas fa-star';
+            dashboardCards[2].querySelector('p').textContent = 'My Reviews';
+        }
+        if (dashboardCards[3]) {
+            dashboardCards[3].querySelector('i').className = 'fas fa-euro-sign';
+            dashboardCards[3].querySelector('p').textContent = 'Total Spent';
+        }
+    } else {
+        // Reset to admin labels
+        if (dashboardCards[0]) {
+            dashboardCards[0].querySelector('i').className = 'fas fa-box';
+            dashboardCards[0].querySelector('p').textContent = 'Products';
+        }
+        if (dashboardCards[1]) {
+            dashboardCards[1].querySelector('p').textContent = 'Orders';
+        }
+        if (dashboardCards[2]) {
+            dashboardCards[2].querySelector('p').textContent = 'Reviews';
+        }
+        if (dashboardCards[3]) {
+            dashboardCards[3].querySelector('i').className = 'fas fa-users';
+            dashboardCards[3].querySelector('p').textContent = 'Users';
+        }
+    }
+}
+
+// Update section titles based on user role
+function updateSectionTitles(isAdmin) {
+    if (!isAdmin) {
+        // Update section titles for regular users
+        const ordersTitle = document.querySelector('#orders h2');
+        const reviewsTitle = document.querySelector('#reviews h2');
+        
+        if (ordersTitle) ordersTitle.textContent = 'My Orders';
+        if (reviewsTitle) reviewsTitle.textContent = 'My Reviews';
+    } else {
+        // Reset to admin titles
+        const ordersTitle = document.querySelector('#orders h2');
+        const reviewsTitle = document.querySelector('#reviews h2');
+        
+        if (ordersTitle) ordersTitle.textContent = 'Orders Management';
+        if (reviewsTitle) reviewsTitle.textContent = 'Reviews Management';
+    }
+}
+
+// Update dashboard click handlers based on user role
+function updateDashboardClickHandlers(isAdmin) {
+    const cards = [
+        document.getElementById('dashboardCard1'),
+        document.getElementById('dashboardCard2'),
+        document.getElementById('dashboardCard3'),
+        document.getElementById('dashboardCard4')
+    ];
+    
+    // Remove existing click handlers
+    cards.forEach(card => {
+        if (card) {
+            card.onclick = null;
+        }
+    });
+    
+    if (isAdmin) {
+        // Admin click handlers
+        if (cards[0]) cards[0].onclick = () => showSection('products');
+        if (cards[1]) cards[1].onclick = () => showSection('orders');
+        if (cards[2]) cards[2].onclick = () => showSection('reviews');
+        if (cards[3]) cards[3].onclick = () => showSection('admin');
+    } else {
+        // User click handlers
+        if (cards[0]) cards[0].onclick = () => showSection('cart');      // Cart Items
+        if (cards[1]) cards[1].onclick = () => showSection('orders');    // My Orders
+        if (cards[2]) cards[2].onclick = () => showSection('reviews');   // My Reviews
+        if (cards[3]) cards[3].onclick = () => showSection('orders');    // Total Spent -> Orders (to see purchase history)
+    }
+}
+
 // Products functions
 async function loadProducts(page = 1, filters = {}) {
-    if (!authToken) return;
-    
     showLoading(true);
     currentProductsPage = page;
     
@@ -285,8 +463,14 @@ async function loadProducts(page = 1, filters = {}) {
             ...filters
         });
         
+        // Include authorization header only if user is logged in
+        const headers = {};
+        if (authToken) {
+            headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
         const response = await fetch(`${API_BASE}/products?${params}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
+            headers
         });
         
         if (response.ok) {
@@ -331,7 +515,10 @@ function displayProducts(products) {
                 </div>
                 <div class="product-actions">
                     <button class="btn btn-secondary btn-small" onclick="showProductDetails('${product._id}')">View Details</button>
-                    <button class="btn btn-success" onclick="addToCart('${product._id}', 1)">Add to Cart</button>
+                    ${currentUser ? 
+                        `<button class="btn btn-success" onclick="addToCart('${product._id}', 1)">Add to Cart</button>` : 
+                        `<button class="btn btn-primary" onclick="showSection('login')">Login to Buy</button>`
+                    }
                     ${currentUser && currentUser.role === 'admin' ? 
                         `<button class="btn btn-primary btn-small" onclick="editProduct('${product._id}')">Edit</button>
                          <button class="btn btn-danger btn-small" onclick="deleteProduct('${product._id}')">Delete</button>` : 
@@ -598,7 +785,9 @@ async function loadOrders(page = 1, filters = {}) {
             ...filters
         });
         
-        const response = await fetch(`${API_BASE}/orders?${params}`, {
+        // Use /my endpoint for regular users, /orders for admin
+        const endpoint = currentUser?.role === 'admin' ? 'orders' : 'orders/my';
+        const response = await fetch(`${API_BASE}/${endpoint}?${params}`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
         
@@ -900,7 +1089,9 @@ async function loadReviews(page = 1, filters = {}) {
             ...filters
         });
         
-        const response = await fetch(`${API_BASE}/reviews?${params}`, {
+        // Use /my endpoint for regular users, /reviews for admin
+        const endpoint = currentUser?.role === 'admin' ? 'reviews' : 'reviews/my';
+        const response = await fetch(`${API_BASE}/${endpoint}?${params}`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
         
@@ -1813,8 +2004,14 @@ async function showProductDetails(productId) {
     showLoading(true);
     
     try {
+        // Include authorization header only if user is logged in
+        const headers = {};
+        if (authToken) {
+            headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
         const response = await fetch(`${API_BASE}/products/${productId}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
+            headers
         });
         
         if (response.ok) {
@@ -1962,6 +2159,18 @@ function displayProductDetails(product) {
             </div>
         </div>
     `;
+    
+    // Update buttons visibility based on login status
+    const addToCartBtn = document.getElementById('detailsAddToCart');
+    const loginToBuyBtn = document.getElementById('detailsLoginToBuy');
+    
+    if (currentUser) {
+        if (addToCartBtn) addToCartBtn.style.display = 'inline-block';
+        if (loginToBuyBtn) loginToBuyBtn.style.display = 'none';
+    } else {
+        if (addToCartBtn) addToCartBtn.style.display = 'none';
+        if (loginToBuyBtn) loginToBuyBtn.style.display = 'inline-block';
+    }
 }
 
 // Change main image in gallery
@@ -2008,6 +2217,452 @@ async function deleteProductFromDetails() {
     if (success) {
         showSection('products');
     }
+}
+
+// ===================
+// ADMIN USER MANAGEMENT
+// ===================
+
+// Show admin tab
+function showAdminTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.admin-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    if (tabName === 'orders') {
+        document.getElementById('adminOrdersTab').classList.add('active');
+        loadAllOrders();
+    } else if (tabName === 'users') {
+        document.getElementById('adminUsersTab').classList.add('active');
+        loadAllUsers();
+    }
+}
+
+// Load all users (admin only)
+async function loadAllUsers(page = 1, search = '') {
+    if (!authToken || currentUser?.role !== 'admin') return;
+    
+    showLoading(true);
+    
+    try {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: '10'
+        });
+        
+        if (search) {
+            params.append('search', search);
+        }
+        
+        const response = await fetch(`${API_BASE}/users?${params}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            displayAdminUsers(data.users);
+            displayAdminUsersPagination(data.pagination);
+        } else {
+            showAlert('Failed to load users', 'error');
+        }
+    } catch (error) {
+        console.error('Load users error:', error);
+        showAlert('Network error loading users', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Display admin users table
+function displayAdminUsers(users) {
+    const container = document.getElementById('adminUsersTable');
+    
+    if (!users.length) {
+        container.innerHTML = '<div class="no-users-message"><i class="fas fa-users"></i><p>No users found.</p></div>';
+        return;
+    }
+    
+    let html = '<div class="users-grid">';
+    
+    users.forEach(user => {
+        const initials = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+        const memberSince = new Date(user.createdAt).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        html += `
+            <div class="user-card ${!user.isActive ? 'inactive-user' : ''}">
+                <div class="user-card-header">
+                    <div class="user-avatar">
+                        <span class="user-initials">${initials}</span>
+                        <div class="user-status-dot ${user.isActive ? 'online' : 'offline'}"></div>
+                    </div>
+                    <div class="user-info">
+                        <h3 class="user-name">${user.firstName} ${user.lastName}</h3>
+                        <p class="user-username">@${user.username}</p>
+                        <span class="role-badge ${user.role}">
+                            <i class="fas ${user.role === 'admin' ? 'fa-crown' : 'fa-user'}"></i>
+                            ${user.role}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="user-card-body">
+                    <div class="user-detail">
+                        <i class="fas fa-envelope"></i>
+                        <span>${user.email}</span>
+                    </div>
+                    <div class="user-detail">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Joined ${memberSince}</span>
+                    </div>
+                    <div class="user-detail">
+                        <i class="fas ${user.isActive ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        <span class="status-badge ${user.isActive ? 'active' : 'inactive'}">
+                            ${user.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="user-card-actions">
+                    <button class="btn btn-primary btn-card" onclick="showUserDetails('${user._id}')" title="View Details">
+                        <i class="fas fa-eye"></i>
+                        Details
+                    </button>
+                    <button class="btn ${user.isActive ? 'btn-warning' : 'btn-success'} btn-card" 
+                            onclick="toggleUserStatus('${user._id}')" 
+                            title="${user.isActive ? 'Deactivate User' : 'Activate User'}">
+                        <i class="fas ${user.isActive ? 'fa-user-slash' : 'fa-user-check'}"></i>
+                        ${user.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                    ${user._id !== currentUser._id ? 
+                        `<button class="btn btn-danger btn-card" onclick="deleteUser('${user._id}')" title="Delete User">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>` : 
+                        `<div class="current-user-indicator">
+                            <i class="fas fa-star"></i>
+                            <span>Current User</span>
+                        </div>`
+                    }
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Display admin users pagination
+function displayAdminUsersPagination(pagination) {
+    const container = document.getElementById('adminUsersPagination');
+    
+    if (pagination.totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = '<div class="pagination-controls">';
+    
+    if (pagination.hasPrev) {
+        html += `<button onclick="loadAllUsers(${pagination.currentPage - 1})">Previous</button>`;
+    }
+    
+    for (let i = 1; i <= pagination.totalPages; i++) {
+        if (i === pagination.currentPage) {
+            html += `<button class="active">${i}</button>`;
+        } else {
+            html += `<button onclick="loadAllUsers(${i})">${i}</button>`;
+        }
+    }
+    
+    if (pagination.hasNext) {
+        html += `<button onclick="loadAllUsers(${pagination.currentPage + 1})">Next</button>`;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Search users
+function searchUsers() {
+    const searchTerm = document.getElementById('userSearchInput').value;
+    loadAllUsers(1, searchTerm);
+}
+
+// Toggle user status (admin only)
+async function toggleUserStatus(userId) {
+    if (!authToken || currentUser?.role !== 'admin') return;
+    
+    try {
+        const response = await fetch(`${API_BASE}/users/${userId}/toggle-status`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            showAlert('User status updated successfully!', 'success');
+            loadAllUsers();
+        } else {
+            const data = await response.json();
+            showAlert(data.message || 'Failed to update user status', 'error');
+        }
+    } catch (error) {
+        console.error('Toggle user status error:', error);
+        showAlert('Network error', 'error');
+    }
+}
+
+// Delete user (admin only)
+async function deleteUser(userId) {
+    if (!authToken || currentUser?.role !== 'admin') return;
+    
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/users/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            showAlert('User deleted successfully!', 'success');
+            loadAllUsers();
+        } else {
+            const data = await response.json();
+            showAlert(data.message || 'Failed to delete user', 'error');
+        }
+    } catch (error) {
+        console.error('Delete user error:', error);
+        showAlert('Network error', 'error');
+    }
+}
+
+// Show user details modal
+async function showUserDetails(userId) {
+    if (!authToken || currentUser?.role !== 'admin') return;
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE}/users/${userId}/details`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            displayUserDetails(data);
+            document.getElementById('userDetailsModal').style.display = 'block';
+        } else {
+            showAlert('Failed to load user details', 'error');
+        }
+    } catch (error) {
+        console.error('Load user details error:', error);
+        showAlert('Network error loading user details', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Close user details modal
+function closeUserDetailsModal() {
+    document.getElementById('userDetailsModal').style.display = 'none';
+}
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeUserDetailsModal();
+    }
+});
+
+// Show user details tab
+function showUserDetailsTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.user-details-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.user-details-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    document.getElementById(`user${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
+}
+
+// Display user details
+function displayUserDetails(data) {
+    const { user, orders, cart, statistics } = data;
+    
+    // Update modal title
+    document.getElementById('userDetailsModalTitle').textContent = `${user.firstName} ${user.lastName} Details`;
+    
+    // Display user info
+    displayUserInfo(user, statistics);
+    
+    // Display user orders
+    displayUserOrders(orders);
+    
+    // Display user cart
+    displayUserCart(cart);
+}
+
+// Display user info
+function displayUserInfo(user, statistics) {
+    const content = document.getElementById('userInfoContent');
+    
+    const statusBreakdown = statistics.ordersByStatus.map(status => 
+        `<span class="status-count">${status._id}: ${status.count}</span>`
+    ).join(', ');
+    
+    content.innerHTML = `
+        <div class="user-info-grid">
+            <div class="user-info-card">
+                <h3>Personal Information</h3>
+                <div class="info-item">
+                    <strong>Full Name:</strong> ${user.firstName} ${user.lastName}
+                </div>
+                <div class="info-item">
+                    <strong>Username:</strong> @${user.username}
+                </div>
+                <div class="info-item">
+                    <strong>Email:</strong> ${user.email}
+                </div>
+                <div class="info-item">
+                    <strong>Role:</strong> 
+                    <span class="role-badge ${user.role}">${user.role}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Status:</strong> 
+                    <span class="status-badge ${user.isActive ? 'active' : 'inactive'}">
+                        ${user.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <strong>Joined:</strong> ${new Date(user.createdAt).toLocaleDateString()}
+                </div>
+            </div>
+            
+            <div class="user-info-card">
+                <h3>Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">${statistics.totalOrders}</span>
+                        <span class="stat-label">Total Orders</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">€${statistics.totalSpent.toFixed(2)}</span>
+                        <span class="stat-label">Total Spent</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">${statistics.cartItems}</span>
+                        <span class="stat-label">Cart Items</span>
+                    </div>
+                </div>
+                ${statusBreakdown ? `
+                    <div class="info-item">
+                        <strong>Orders by Status:</strong><br>
+                        ${statusBreakdown}
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Display user orders
+function displayUserOrders(orders) {
+    const content = document.getElementById('userOrdersContent');
+    
+    if (!orders.length) {
+        content.innerHTML = '<p>No orders found.</p>';
+        return;
+    }
+    
+    let html = '<div class="user-orders-list">';
+    
+    orders.forEach(order => {
+        const itemsText = order.items.map(item => 
+            `${item.quantity}x ${item.product.name}`
+        ).join(', ');
+        
+        html += `
+            <div class="user-order-card">
+                <div class="order-header">
+                    <strong>Order #${order.orderNumber}</strong>
+                    <span class="order-status status-${order.status}">${order.status}</span>
+                </div>
+                <div class="order-details">
+                    <div><strong>Items:</strong> ${itemsText}</div>
+                    <div><strong>Total:</strong> €${order.totalAmount.toFixed(2)}</div>
+                    <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</div>
+                    ${order.trackingNumber ? `<div><strong>Tracking:</strong> ${order.trackingNumber}</div>` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    content.innerHTML = html;
+}
+
+// Display user cart
+function displayUserCart(cart) {
+    const content = document.getElementById('userCartContent');
+    
+    if (!cart.items || cart.items.length === 0) {
+        content.innerHTML = '<p>Cart is empty.</p>';
+        return;
+    }
+    
+    let html = '<div class="user-cart-list">';
+    let totalValue = 0;
+    
+    cart.items.forEach(item => {
+        const itemTotal = item.product.price * item.quantity;
+        totalValue += itemTotal;
+        
+        html += `
+            <div class="cart-item-card">
+                <div class="cart-item-image">
+                    ${item.product.images && item.product.images.length > 0 
+                        ? `<img src="${item.product.images[0]}" alt="${item.product.name}">`
+                        : '<i class="fas fa-image"></i>'
+                    }
+                </div>
+                <div class="cart-item-details">
+                    <h4>${item.product.name}</h4>
+                    <div class="cart-item-info">
+                        <span>Quantity: ${item.quantity}</span>
+                        <span>Price: €${item.product.price.toFixed(2)}</span>
+                        <span><strong>Total: €${itemTotal.toFixed(2)}</strong></span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+        <div class="cart-total">
+            <h3>Cart Total: €${totalValue.toFixed(2)}</h3>
+        </div>
+    </div>`;
+    
+    content.innerHTML = html;
 }
 
 // ===================

@@ -177,6 +177,58 @@ router.get('/', auth, [
   }
 });
 
+// @route   GET /api/orders/my
+// @desc    Get current user's orders
+// @access  Private
+router.get('/my', auth, [
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
+  query('status').optional().isIn(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled']).withMessage('Invalid status')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    let filter = { user: req.user._id };
+    
+    // Status filter
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
+
+    const orders = await Order.find(filter)
+      .populate('items.product', 'name price images')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalOrders = await Order.countDocuments(filter);
+
+    res.json({
+      orders,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalOrders / limit),
+        totalOrders,
+        hasNext: page * limit < totalOrders,
+        hasPrev: page > 1
+      }
+    });
+  } catch (error) {
+    console.error('Get my orders error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/orders/:id
 // @desc    Get order by ID
 // @access  Private

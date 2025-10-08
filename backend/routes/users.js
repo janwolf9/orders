@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const { body, validationResult, query } = require('express-validator');
 const User = require('../models/User');
 const { auth, adminAuth } = require('../middleware/auth');
@@ -59,6 +60,58 @@ router.get('/', adminAuth, [
     });
   } catch (error) {
     console.error('Get users error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/users/:id/details
+// @desc    Get user details with orders and cart (admin only)
+// @access  Private/Admin
+router.get('/:id/details', adminAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Get user's orders
+    const Order = require('../models/Order');
+    const orders = await Order.find({ user: req.params.id })
+      .populate('items.product', 'name price images')
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    // Get user's cart
+    const Cart = require('../models/Cart');
+    const cart = await Cart.findOne({ user: req.params.id })
+      .populate('items.product', 'name price images');
+
+    // Calculate user statistics
+    const totalOrders = await Order.countDocuments({ user: req.params.id });
+    const totalSpent = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    
+    const ordersByStatus = await Order.aggregate([
+      { $match: { user: new mongoose.Types.ObjectId(req.params.id) } },
+      { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]);
+
+    res.json({
+      user,
+      orders,
+      cart: cart || { items: [] },
+      statistics: {
+        totalOrders,
+        totalSpent,
+        cartItems: cart ? cart.items.length : 0,
+        ordersByStatus
+      }
+    });
+  } catch (error) {
+    console.error('Get user details error:', error);
+    if (error.name === 'CastError') {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
     res.status(500).json({ message: 'Server error' });
   }
 });

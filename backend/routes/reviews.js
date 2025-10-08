@@ -118,6 +118,52 @@ router.get('/', [
   }
 });
 
+// @route   GET /api/reviews/my
+// @desc    Get current user's reviews
+// @access  Private
+router.get('/my', auth, [
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const filter = { user: req.user._id };
+
+    const reviews = await Review.find(filter)
+      .populate('product', 'name images price')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalReviews = await Review.countDocuments(filter);
+
+    res.json({
+      reviews,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalReviews / limit),
+        totalReviews,
+        hasNext: page * limit < totalReviews,
+        hasPrev: page > 1
+      }
+    });
+  } catch (error) {
+    console.error('Get my reviews error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/reviews/:id
 // @desc    Get review by ID
 // @access  Public
