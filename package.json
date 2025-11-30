@@ -6,7 +6,13 @@
   "scripts": {
     "build": "echo 'Build completed'",
     "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:codegen": "playwright codegen http://localhost:3001"
   },
   "engines": {
     "node": ">=14.x"
@@ -25,7 +31,9 @@
     "express-validator": "^7.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0"
   },
   "keywords": [
     "nodejs",

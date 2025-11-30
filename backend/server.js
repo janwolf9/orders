@@ -28,24 +28,33 @@ app.use(async (req, res, next) => {
 // Security middleware
 app.use(helmet());
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-app.use('/api/', limiter);
+// Rate limiting (disabled in development for testing)
+if (process.env.NODE_ENV === 'production') {
+  const limiter = rateLimit({
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.'
+  });
+  app.use('/api/', limiter);
+}
 
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3001', 
   'http://127.0.0.1:3001', 
   'http://localhost:3000',
+  'http://localhost:8080',  // For Playwright tests
+  'http://127.0.0.1:8080',  // For Playwright tests
   /^https:\/\/.*\.vercel\.app$/
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
+    // In development, allow all origins for testing
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     

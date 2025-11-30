@@ -1,0 +1,70 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - heading "E-Shop" [level=2] [ref=e5]
+      - generic [ref=e6]:
+        - link "Dashboard" [ref=e7] [cursor=pointer]:
+          - /url: "#"
+        - link "Products" [ref=e8] [cursor=pointer]:
+          - /url: "#"
+        - link "Orders" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+        - link "Reviews" [ref=e10] [cursor=pointer]:
+          - /url: "#"
+        - link "" [ref=e12] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e13]: 
+        - button "" [ref=e14] [cursor=pointer]:
+          - generic [ref=e15]: 
+        - generic [ref=e16]:
+          - generic [ref=e17]: testuser1764492656444
+          - button "Logout" [ref=e18] [cursor=pointer]
+  - generic [ref=e19]:
+    - text:                
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - button " Back to Products" [ref=e22] [cursor=pointer]:
+          - generic [ref=e23]: 
+          - text: Back to Products
+        - heading "Product Details" [level=2] [ref=e24]
+        - generic [ref=e25]:
+          - button " Add to Cart" [active] [ref=e26] [cursor=pointer]:
+            - generic [ref=e27]: 
+            - text: Add to Cart
+          - text:   
+      - generic [ref=e29]:
+        - generic [ref=e32]:
+          - generic [ref=e33]: 
+          - paragraph [ref=e34]: No image available
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - heading "Test Price Product" [level=1] [ref=e37]
+            - generic [ref=e38]: €10000.00
+          - generic [ref=e39]:
+            - generic [ref=e40]:
+              - strong [ref=e41]: "Category:"
+              - text: electronics
+            - generic [ref=e42]:
+              - strong [ref=e43]: "Brand:"
+              - text: TestBrand
+            - generic [ref=e44]:
+              - strong [ref=e45]: "Stock:"
+              - generic [ref=e46]: 10 available
+            - generic [ref=e47]:
+              - strong [ref=e48]: "Added:"
+              - text: 11/30/2025
+          - generic [ref=e49]:
+            - heading "Description" [level=3] [ref=e50]
+            - paragraph [ref=e51]: Testing price validation
+          - generic [ref=e52]:
+            - strong [ref=e54]: "Quantity:"
+            - generic [ref=e55]:
+              - button "-" [ref=e56] [cursor=pointer]
+              - spinbutton "Quantity:" [ref=e57]: "25"
+              - button "+" [ref=e58] [cursor=pointer]
+    - text: 
+  - text: 
+```

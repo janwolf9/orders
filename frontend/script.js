@@ -9,6 +9,28 @@ let currentProductsPage = 1;
 let currentOrdersPage = 1;
 let currentReviewsPage = 1;
 
+// Contentsquare tracking functions
+function trackContentSquareEvent(eventName, properties = {}) {
+    if (typeof window.uxa !== 'undefined') {
+        window.uxa('trackEvent', eventName, properties);
+        console.log(`Contentsquare event tracked: ${eventName}`, properties);
+    }
+}
+
+function identifyContentSquareUser(userId, attributes = {}) {
+    if (typeof window.uxa !== 'undefined') {
+        window.uxa('identifyUser', userId, attributes);
+        console.log(`Contentsquare user identified: ${userId}`, attributes);
+    }
+}
+
+function triggerContentSquareGoal(goalName, value = null) {
+    if (typeof window.uxa !== 'undefined') {
+        window.uxa('trackGoal', goalName, value);
+        console.log(`Contentsquare goal triggered: ${goalName}`, value);
+    }
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
     loadTheme();
@@ -67,11 +89,22 @@ async function handleLogin(e) {
             currentUser = data.user;
             localStorage.setItem('authToken', authToken);
             
+            // Track successful login with Contentsquare
+            identifyContentSquareUser(currentUser._id, {
+                username: currentUser.username,
+                email: currentUser.email,
+                role: currentUser.role,
+                isAdmin: currentUser.role === 'admin'
+            });
+            trackContentSquareEvent('user_login_success');
+            triggerContentSquareGoal('login_success');
+            
             updateNavigation();
             showSection('dashboard');
             loadDashboardData();
             showAlert('Login successful!', 'success');
         } else {
+            trackContentSquareEvent('user_login_failed');
             showAlert(data.message || 'Login failed', 'error');
         }
     } catch (error) {
@@ -110,11 +143,22 @@ async function handleRegister(e) {
             currentUser = data.user;
             localStorage.setItem('authToken', authToken);
             
+            // Track successful registration with Contentsquare
+            identifyContentSquareUser(currentUser._id, {
+                username: currentUser.username,
+                email: currentUser.email,
+                role: currentUser.role,
+                isAdmin: currentUser.role === 'admin'
+            });
+            trackContentSquareEvent('user_registration_success');
+            triggerContentSquareGoal('registration_success');
+            
             updateNavigation();
             showSection('dashboard');
             loadDashboardData();
             showAlert('Registration successful!', 'success');
         } else {
+            trackContentSquareEvent('user_registration_failed');
             showAlert(data.message || 'Registration failed', 'error');
         }
     } catch (error) {
@@ -221,15 +265,22 @@ function showSection(sectionName) {
     
     if (!currentUser && protectedSections.includes(sectionName)) {
         showAlert('Please log in to access this section', 'error');
+        trackContentSquareEvent('unauthorized_access_attempt', { section: sectionName });
         showSection('login');
         return;
     }
     
+    // Track page navigation with Contentsquare
+    trackContentSquareEvent('page_view', { 
+        section: sectionName,
+        userRole: currentUser?.role || 'anonymous'
+    });
+
     // Hide all sections
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
-    
+
     // Show requested section
     const section = document.getElementById(sectionName);
     if (section) {
@@ -751,6 +802,15 @@ function searchProducts() {
     const searchTerm = document.getElementById('searchProducts').value;
     const category = document.getElementById('categoryFilter').value;
     const sortBy = document.getElementById('priceSort').value;
+    
+    // Track search events with Contentsquare
+    if (searchTerm && searchTerm.length > 0) {
+        trackContentSquareEvent('product_search', {
+            searchTerm: searchTerm,
+            category: category || 'all',
+            sortBy: sortBy || 'none'
+        });
+    }
     
     const filters = {};
     if (searchTerm) filters.search = searchTerm;
@@ -1459,8 +1519,16 @@ async function addToCart(productId, quantity = 1) {
         if (response.ok) {
             currentCart = data.cart;
             updateCartUI();
+            
+            // Track add to cart with Contentsquare
+            trackContentSquareEvent('product_added_to_cart', {
+                productId: productId,
+                quantity: quantity
+            });
+            
             showAlert('Item added to cart!', 'success');
         } else {
+            trackContentSquareEvent('add_to_cart_failed');
             showAlert(data.message || 'Failed to add item to cart', 'error');
         }
     } catch (error) {
@@ -1691,12 +1759,21 @@ async function handleCheckoutSubmit(e) {
         
         if (response.ok) {
             closeCheckoutModal();
+            
+            // Track successful purchase with Contentsquare
+            trackContentSquareEvent('purchase_completed', {
+                orderId: data.orderId,
+                totalAmount: data.totalAmount || 0
+            });
+            triggerContentSquareGoal('purchase', data.totalAmount || 0);
+            
             currentCart = null;
             updateCartUI();
             displayCartItems();
             showAlert('Order placed successfully!', 'success');
             showSection('orders');
         } else {
+            trackContentSquareEvent('checkout_failed');
             showAlert(data.message || 'Checkout failed', 'error');
         }
     } catch (error) {
