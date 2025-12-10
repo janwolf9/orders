@@ -2942,4 +2942,6 @@ function removeImagePreview(index) {
     // Refresh preview
     previewImages(input);
 
+    
+
 }
