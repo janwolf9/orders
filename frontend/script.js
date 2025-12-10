@@ -31,6 +31,29 @@ function triggerContentSquareGoal(goalName, value = null) {
     }
 }
 
+// Browsee tracking functions
+function trackBrowseeEvent(eventName, properties = {}) {
+    if (typeof window._browsee === 'function') {
+        // Browsee API uses simple event name without 'trackEvent' wrapper
+        window._browsee(eventName, properties);
+        console.log(`Browsee event tracked: ${eventName}`, properties);
+    } else {
+        console.warn('Browsee not loaded yet, event queued:', eventName, properties);
+    }
+}
+
+function identifyBrowseeUser(userId, attributes = {}) {
+    if (typeof window._browsee === 'function' && userId) {
+        // Convert userId to string if needed
+        const userIdString = String(userId);
+        // Browsee API: _browsee('identify', userId, attributes)
+        window._browsee('identify', userIdString, attributes);
+        console.log(`Browsee user identified: ${userIdString}`, attributes);
+    } else {
+        console.warn('Browsee not loaded yet or invalid userId');
+    }
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
     loadTheme();
@@ -75,6 +98,9 @@ async function handleLogin(e) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
+    // Track login attempt
+    trackBrowseeEvent('login_attempt', { email: email });
+    
     try {
         const response = await fetch(`${API_BASE}/auth/login`, {
             method: 'POST',
@@ -99,16 +125,30 @@ async function handleLogin(e) {
             trackContentSquareEvent('user_login_success');
             triggerContentSquareGoal('login_success');
             
+            // Track successful login with Browsee
+            identifyBrowseeUser(currentUser._id, {
+                username: currentUser.username,
+                email: currentUser.email,
+                role: currentUser.role,
+                isAdmin: currentUser.role === 'admin'
+            });
+            trackBrowseeEvent('login_success', {
+                userId: currentUser._id,
+                role: currentUser.role
+            });
+            
             updateNavigation();
             showSection('dashboard');
             loadDashboardData();
             showAlert('Login successful!', 'success');
         } else {
             trackContentSquareEvent('user_login_failed');
+            trackBrowseeEvent('login_failed', { reason: data.message });
             showAlert(data.message || 'Login failed', 'error');
         }
     } catch (error) {
         console.error('Login error:', error);
+        trackBrowseeEvent('login_error', { error: error.message });
         showAlert('Network error. Please try again.', 'error');
     } finally {
         showLoading(false);
@@ -128,6 +168,12 @@ async function handleRegister(e) {
     };
     
     console.log('Registration form data:', formData); // Debug log
+    
+    // Track registration attempt
+    trackBrowseeEvent('registration_started', { 
+        email: formData.email,
+        username: formData.username
+    });
     
     try {
         const response = await fetch(`${API_BASE}/auth/register`, {
@@ -153,16 +199,29 @@ async function handleRegister(e) {
             trackContentSquareEvent('user_registration_success');
             triggerContentSquareGoal('registration_success');
             
+            // Track successful registration with Browsee
+            identifyBrowseeUser(currentUser._id, {
+                username: currentUser.username,
+                email: currentUser.email,
+                role: currentUser.role
+            });
+            trackBrowseeEvent('registration_completed', {
+                userId: currentUser._id,
+                role: currentUser.role
+            });
+            
             updateNavigation();
             showSection('dashboard');
             loadDashboardData();
             showAlert('Registration successful!', 'success');
         } else {
             trackContentSquareEvent('user_registration_failed');
+            trackBrowseeEvent('registration_failed', { reason: data.message });
             showAlert(data.message || 'Registration failed', 'error');
         }
     } catch (error) {
         console.error('Registration error:', error);
+        trackBrowseeEvent('registration_error', { error: error.message });
         showAlert('Network error. Please try again.', 'error');
     } finally {
         showLoading(false);
@@ -196,6 +255,12 @@ async function verifyToken() {
 }
 
 function logout() {
+    // Track logout before clearing user data
+    trackBrowseeEvent('user_logout', {
+        userId: currentUser?._id,
+        username: currentUser?.username
+    });
+    
     authToken = null;
     currentUser = null;
     localStorage.removeItem('authToken');
@@ -266,6 +331,7 @@ function showSection(sectionName) {
     if (!currentUser && protectedSections.includes(sectionName)) {
         showAlert('Please log in to access this section', 'error');
         trackContentSquareEvent('unauthorized_access_attempt', { section: sectionName });
+        trackBrowseeEvent('unauthorized_access_attempt', { section: sectionName });
         showSection('login');
         return;
     }
@@ -274,6 +340,13 @@ function showSection(sectionName) {
     trackContentSquareEvent('page_view', { 
         section: sectionName,
         userRole: currentUser?.role || 'anonymous'
+    });
+    
+    // Track page navigation with Browsee
+    trackBrowseeEvent('page_view', {
+        page: sectionName,
+        userRole: currentUser?.role || 'anonymous',
+        userId: currentUser?._id || null
     });
 
     // Hide all sections
@@ -807,6 +880,13 @@ function searchProducts() {
     if (searchTerm && searchTerm.length > 0) {
         trackContentSquareEvent('product_search', {
             searchTerm: searchTerm,
+            category: category || 'all',
+            sortBy: sortBy || 'none'
+        });
+        
+        // Track search with Browsee
+        trackBrowseeEvent('search_performed', {
+            query: searchTerm,
             category: category || 'all',
             sortBy: sortBy || 'none'
         });
@@ -1499,6 +1579,7 @@ function updateCartUI() {
 async function addToCart(productId, quantity = 1) {
     if (!authToken) {
         showAlert('Please login to add items to cart', 'error');
+        trackBrowseeEvent('add_to_cart_blocked', { reason: 'not_logged_in' });
         return;
     }
     
@@ -1526,13 +1607,25 @@ async function addToCart(productId, quantity = 1) {
                 quantity: quantity
             });
             
+            // Track add to cart with Browsee
+            trackBrowseeEvent('add_to_cart', {
+                productId: productId,
+                quantity: quantity,
+                cartTotal: currentCart.total
+            });
+            
             showAlert('Item added to cart!', 'success');
         } else {
             trackContentSquareEvent('add_to_cart_failed');
+            trackBrowseeEvent('add_to_cart_failed', { 
+                productId: productId,
+                reason: data.message 
+            });
             showAlert(data.message || 'Failed to add item to cart', 'error');
         }
     } catch (error) {
         console.error('Add to cart error:', error);
+        trackBrowseeEvent('add_to_cart_error', { error: error.message });
         showAlert('Network error. Please try again.', 'error');
     } finally {
         showLoading(false);
@@ -1631,15 +1724,26 @@ async function removeFromCart(itemId) {
         const data = await response.json();
         
         if (response.ok) {
+            // Track cart item removal
+            trackBrowseeEvent('remove_from_cart', {
+                itemId: itemId,
+                cartTotal: data.cart.total
+            });
+            
             currentCart = data.cart;
             updateCartUI();
             displayCartItems();
             showAlert('Item removed from cart', 'success');
         } else {
+            trackBrowseeEvent('remove_from_cart_failed', { 
+                itemId: itemId,
+                reason: data.message 
+            });
             showAlert(data.message || 'Failed to remove item', 'error');
         }
     } catch (error) {
         console.error('Remove from cart error:', error);
+        trackBrowseeEvent('remove_from_cart_error', { error: error.message });
         showAlert('Network error', 'error');
     } finally {
         showLoading(false);
@@ -1745,6 +1849,12 @@ async function handleCheckoutSubmit(e) {
         notes: document.getElementById('checkoutNotes').value
     };
     
+    // Track checkout started
+    trackBrowseeEvent('checkout_started', {
+        paymentMethod: checkoutData.paymentMethod,
+        country: checkoutData.shippingAddress.country
+    });
+    
     try {
         const response = await fetch(`${API_BASE}/cart/checkout`, {
             method: 'POST',
@@ -1767,6 +1877,14 @@ async function handleCheckoutSubmit(e) {
             });
             triggerContentSquareGoal('purchase', data.totalAmount || 0);
             
+            // Track successful purchase with Browsee
+            trackBrowseeEvent('order_placed', {
+                orderId: data.orderId,
+                totalAmount: data.totalAmount || 0,
+                paymentMethod: checkoutData.paymentMethod,
+                itemCount: currentCart ? currentCart.items.length : 0
+            });
+            
             currentCart = null;
             updateCartUI();
             displayCartItems();
@@ -1774,10 +1892,12 @@ async function handleCheckoutSubmit(e) {
             showSection('orders');
         } else {
             trackContentSquareEvent('checkout_failed');
+            trackBrowseeEvent('checkout_failed', { reason: data.message });
             showAlert(data.message || 'Checkout failed', 'error');
         }
     } catch (error) {
         console.error('Checkout error:', error);
+        trackBrowseeEvent('checkout_error', { error: error.message });
         showAlert('Network error', 'error');
     } finally {
         showLoading(false);
@@ -2094,6 +2214,15 @@ async function showProductDetails(productId) {
         if (response.ok) {
             const data = await response.json();
             currentProductDetails = data.product;
+            
+            // Track product view with Browsee
+            trackBrowseeEvent('product_viewed', {
+                productId: productId,
+                productName: data.product.name,
+                productPrice: data.product.price,
+                productCategory: data.product.category
+            });
+            
             displayProductDetails(data.product);
             showSection('product-details');
         } else {
@@ -2101,6 +2230,10 @@ async function showProductDetails(productId) {
         }
     } catch (error) {
         console.error('Product details error:', error);
+        trackBrowseeEvent('product_view_error', { 
+            productId: productId,
+            error: error.message 
+        });
         showAlert('Network error loading product details', 'error');
     } finally {
         showLoading(false);
