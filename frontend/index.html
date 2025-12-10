@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-    <script>
-  window.VARIANT_TYPE = 'a';
-</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -631,8 +628,16 @@
 
     <script src="script.js"></script>
     <script>
-window._browsee = window._browsee || function () { (_browsee.q = _browsee.q || []).push(arguments) };
-_browsee('init', '85fdc0554ddecf8fb4d546170614f5c754a024613bcce235');
+  window.VARIANT_TYPE = 'a';
+</script>
+
+<script>
+  window._browsee = window._browsee || function () { (_browsee.q = _browsee.q || []).push(arguments) };
+  _browsee('init', '85fdc0554ddecf8fb4d546170614f5c754a024613bcce235');
+  
+  // Set variant property
+  _browsee('setProperty', 'variant', 'a');
+  _browsee('setProperty', 'variant_name', 'Original Form');
 </script>
 <script async src='https://cdn.browsee.io/js/browsee.min.js'></script>
 </body>
