@@ -31,6 +31,27 @@ function triggerContentSquareGoal(goalName, value = null) {
     }
 }
 
+// SUS Questionnaire Function
+function openSUSQuestionnaire() {
+    // Track event in Browsee (optional)
+    if (window._browsee) {
+        _browsee('event', 'sus_survey_opened', {
+            timestamp: new Date().toISOString()
+        });
+    }
+    
+    // Get current user email for tracking
+    const userEmail = localStorage.getItem('userEmail') || 'anonymous';
+    
+    // Open the 1ka survey in a new tab
+    const susUrl = 'https://1ka.arnes.si/susquestionare';
+    
+    // Add user email as parameter (1ka will track it)
+    const urlWithEmail = `${susUrl}?user=${encodeURIComponent(userEmail)}`;
+    
+    window.open(urlWithEmail, '_blank');
+}
+
 // Browsee tracking functions
 function trackBrowseeEvent(eventName, properties = {}) {
     if (typeof window._browsee === 'function') {
@@ -2920,4 +2941,5 @@ function removeImagePreview(index) {
     
     // Refresh preview
     previewImages(input);
+
 }

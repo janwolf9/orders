@@ -1455,3 +1455,56 @@ body {
 /* Utilities */
 .hidden { display: none; }
 .text-center { text-align: center; }
+
+/* SUS Button Styling */
+.sus-button-container {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 30px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.sus-button-container p {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .sus-button-container {
+        padding: 15px 0;
+        margin-top: 20px;
+    }
+    
+    .sus-button-container button {
+        width: 100%;
+        max-width: none !important;
+    }
+}
+
+/* SUS Button Styling */
+.sus-button-container {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 30px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.sus-button-container p {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Make button responsive */
+@media (max-width: 768px) {
+    .sus-button-container {
+        padding: 15px 0;
+        margin-top: 20px;
+    }
+    
+    .sus-button-container button {
+        width: 100%;
+        max-width: none !important;
+    }
+}
