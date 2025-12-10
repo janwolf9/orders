@@ -155,12 +155,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4964,
+                      "duration": 4934,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-11-30T08:49:54.466Z",
+                      "startTime": "2025-11-30T08:57:40.402Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -170,7 +170,7 @@
               ],
               "id": "38d5776f4cae27789961-a3d8629e61d507c05f0a",
               "file": "tc001-registration.spec.ts",
-              "line": 22,
+              "line": 21,
               "column": 7
             }
           ]
@@ -206,12 +206,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8161,
+                      "duration": 8144,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-11-30T08:49:59.794Z",
+                      "startTime": "2025-11-30T08:57:45.720Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -221,7 +221,7 @@
               ],
               "id": "2dea7af89f8528519235-64cd12256e89652dddfa",
               "file": "tc002-add-to-cart.spec.ts",
-              "line": 26,
+              "line": 23,
               "column": 7
             }
           ]
@@ -257,12 +257,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 10745,
+                      "duration": 15193,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-11-30T08:50:07.971Z",
+                      "startTime": "2025-11-30T08:57:53.876Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -308,12 +308,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8997,
+                      "duration": 9511,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-11-30T08:50:18.730Z",
+                      "startTime": "2025-11-30T08:58:09.142Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -359,12 +359,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2074,
+                      "duration": 2037,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-11-30T08:50:27.740Z",
+                      "startTime": "2025-11-30T08:58:18.665Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -380,795 +380,15 @@
           ]
         }
       ]
-    },
-    {
-      "title": "tc006-quantity-boundaries.spec.ts",
-      "file": "tc006-quantity-boundaries.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "TC-006: Testiranje količin produkta v košarici",
-          "file": "tc006-quantity-boundaries.spec.ts",
-          "line": 14,
-          "column": 6,
-          "specs": [
-            {
-              "title": "TC-006-1: Negativna vrednost (-1) - EC-1",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8305,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:50:29.827Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a4c555b3b97592368326-5bef4d7302b8aec4ff94",
-              "file": "tc006-quantity-boundaries.spec.ts",
-              "line": 44,
-              "column": 7
-            },
-            {
-              "title": "TC-006-2: Ničelna vrednost (0) - EC-2",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 8290,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m1\u001b[39m\nReceived:    \u001b[31m0\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m1\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n    at /Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts:94:24",
-                        "location": {
-                          "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts",
-                          "column": 24,
-                          "line": 94
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 92 |\u001b[39m       \u001b[36mconst\u001b[39m currentValue \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m quantityInput\u001b[33m.\u001b[39minputValue()\u001b[33m;\u001b[39m\n \u001b[90m 93 |\u001b[39m       \u001b[36mconst\u001b[39m numValue \u001b[33m=\u001b[39m parseInt(currentValue) \u001b[33m||\u001b[39m \u001b[35m0\u001b[39m\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 94 |\u001b[39m       expect(numValue)\u001b[33m.\u001b[39mtoBeGreaterThanOrEqual(\u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 95 |\u001b[39m     }\n \u001b[90m 96 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 97 |\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts",
-                            "column": 24,
-                            "line": 94
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m1\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n\n\u001b[0m \u001b[90m 92 |\u001b[39m       \u001b[36mconst\u001b[39m currentValue \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m quantityInput\u001b[33m.\u001b[39minputValue()\u001b[33m;\u001b[39m\n \u001b[90m 93 |\u001b[39m       \u001b[36mconst\u001b[39m numValue \u001b[33m=\u001b[39m parseInt(currentValue) \u001b[33m||\u001b[39m \u001b[35m0\u001b[39m\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 94 |\u001b[39m       expect(numValue)\u001b[33m.\u001b[39mtoBeGreaterThanOrEqual(\u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 95 |\u001b[39m     }\n \u001b[90m 96 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 97 |\u001b[39m\u001b[0m\n\u001b[2m    at /Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts:94:24\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:50:38.142Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc006-quantity-boundaries--1684b-2-Ničelna-vrednost-0---EC-2-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc006-quantity-boundaries--1684b-2-Ničelna-vrednost-0---EC-2-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc006-quantity-boundaries--1684b-2-Ničelna-vrednost-0---EC-2-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts",
-                        "column": 24,
-                        "line": 94
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "a4c555b3b97592368326-33b92a8f61cb43141377",
-              "file": "tc006-quantity-boundaries.spec.ts",
-              "line": 72,
-              "column": 7
-            },
-            {
-              "title": "TC-006-3: Minimalna veljavna vrednost (1) - EC-3",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8980,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:50:46.830Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a4c555b3b97592368326-ed111deda503fc847d82",
-              "file": "tc006-quantity-boundaries.spec.ts",
-              "line": 98,
-              "column": 7
-            },
-            {
-              "title": "TC-006-4: Srednja vrednost (25) - EC-3",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 13837,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.alert-success')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.alert-success')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.alert-success')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.alert-success')\u001b[22m\n\n    at /Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts:129:32",
-                        "location": {
-                          "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts",
-                          "column": 32,
-                          "line": 129
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 127 |\u001b[39m     \u001b[90m// Preveri success\u001b[39m\n \u001b[90m 128 |\u001b[39m     \u001b[36mconst\u001b[39m successAlert \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.alert-success'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 129 |\u001b[39m     \u001b[36mawait\u001b[39m expect(successAlert)\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 130 |\u001b[39m     \u001b[36mconst\u001b[39m alertText \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m successAlert\u001b[33m.\u001b[39mtextContent()\u001b[33m;\u001b[39m\n \u001b[90m 131 |\u001b[39m     expect(alertText\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mtoLowerCase())\u001b[33m.\u001b[39mtoContain(\u001b[32m'cart'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 132 |\u001b[39m   })\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts",
-                            "column": 32,
-                            "line": 129
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.alert-success')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.alert-success')\u001b[22m\n\n\n\u001b[0m \u001b[90m 127 |\u001b[39m     \u001b[90m// Preveri success\u001b[39m\n \u001b[90m 128 |\u001b[39m     \u001b[36mconst\u001b[39m successAlert \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.alert-success'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 129 |\u001b[39m     \u001b[36mawait\u001b[39m expect(successAlert)\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 130 |\u001b[39m     \u001b[36mconst\u001b[39m alertText \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m successAlert\u001b[33m.\u001b[39mtextContent()\u001b[33m;\u001b[39m\n \u001b[90m 131 |\u001b[39m     expect(alertText\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mtoLowerCase())\u001b[33m.\u001b[39mtoContain(\u001b[32m'cart'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 132 |\u001b[39m   })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts:129:32\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:50:56.025Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc006-quantity-boundaries--b313f--Srednja-vrednost-25---EC-3-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc006-quantity-boundaries--b313f--Srednja-vrednost-25---EC-3-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc006-quantity-boundaries--b313f--Srednja-vrednost-25---EC-3-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc006-quantity-boundaries.spec.ts",
-                        "column": 32,
-                        "line": 129
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "a4c555b3b97592368326-6433127a05c3316101c8",
-              "file": "tc006-quantity-boundaries.spec.ts",
-              "line": 116,
-              "column": 7
-            },
-            {
-              "title": "TC-006-5: Maksimalna vrednost (50) - EC-3",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8985,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:51:10.213Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a4c555b3b97592368326-f888aa473646dbc9d3b9",
-              "file": "tc006-quantity-boundaries.spec.ts",
-              "line": 134,
-              "column": 7
-            },
-            {
-              "title": "TC-006-6: Prekoračena zaloga (999) - EC-4",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8805,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:51:19.440Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a4c555b3b97592368326-fd7a4288d0ef3e7ac6bc",
-              "file": "tc006-quantity-boundaries.spec.ts",
-              "line": 158,
-              "column": 7
-            },
-            {
-              "title": "TC-006-7: Neštevilska vrednost (\"abc\") - EC-5",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6750,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:51:28.255Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a4c555b3b97592368326-d0a6e09db2b2d1149585",
-              "file": "tc006-quantity-boundaries.spec.ts",
-              "line": 185,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "tc007-price-boundaries.spec.ts",
-      "file": "tc007-price-boundaries.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "TC-007: Testiranje cen produktov",
-          "file": "tc007-price-boundaries.spec.ts",
-          "line": 15,
-          "column": 6,
-          "specs": [
-            {
-              "title": "TC-007-1: Negativna cena (-5.00) - EC-1",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8287,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:51:35.020Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ee4cc0714ba456031a5f-385a5f87ec7de78d4c8e",
-              "file": "tc007-price-boundaries.spec.ts",
-              "line": 58,
-              "column": 7
-            },
-            {
-              "title": "TC-007-2: Ničelna cena (0.00) - EC-2",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 7716,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:51:43.318Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ee4cc0714ba456031a5f-47ee2614ba451d81197b",
-              "file": "tc007-price-boundaries.spec.ts",
-              "line": 80,
-              "column": 7
-            },
-            {
-              "title": "TC-007-3: Minimalna veljavna cena (0.01) - EC-3",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8175,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:51:51.043Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ee4cc0714ba456031a5f-175b2a61404ee0499930",
-              "file": "tc007-price-boundaries.spec.ts",
-              "line": 96,
-              "column": 7
-            },
-            {
-              "title": "TC-007-4: Srednja cena (50.00) - EC-3",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "interrupted",
-                      "duration": 3260,
-                      "error": {
-                        "message": "Error: page.waitForTimeout: Test ended.",
-                        "stack": "Error: page.waitForTimeout: Test ended.\n    at /Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc007-price-boundaries.spec.ts:26:16",
-                        "location": {
-                          "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc007-price-boundaries.spec.ts",
-                          "column": 16,
-                          "line": 26
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 24 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mawait\u001b[39m loginUser(page\u001b[33m,\u001b[39m adminCredentials)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m2000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m     \n \u001b[90m 28 |\u001b[39m     \u001b[90m// Navigiraj na Products\u001b[39m\n \u001b[90m 29 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'a.nav-link:has-text(\"Products\")'\u001b[39m)\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc007-price-boundaries.spec.ts",
-                            "column": 16,
-                            "line": 26
-                          },
-                          "message": "Error: page.waitForTimeout: Test ended.\n\n\u001b[0m \u001b[90m 24 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mawait\u001b[39m loginUser(page\u001b[33m,\u001b[39m adminCredentials)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m2000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m     \n \u001b[90m 28 |\u001b[39m     \u001b[90m// Navigiraj na Products\u001b[39m\n \u001b[90m 29 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'a.nav-link:has-text(\"Products\")'\u001b[39m)\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc007-price-boundaries.spec.ts:26:16\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-30T08:51:59.227Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc007-price-boundaries-TC--59b3e-4-Srednja-cena-50-00---EC-3-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/test-results/tc007-price-boundaries-TC--59b3e-4-Srednja-cena-50-00---EC-3-chromium/video.webm"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/janwolf/Documents/FERI/mag2/VUI/orders/tests/tc007-price-boundaries.spec.ts",
-                        "column": 16,
-                        "line": 26
-                      }
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ee4cc0714ba456031a5f-e333ef0b315e00671b6a",
-              "file": "tc007-price-boundaries.spec.ts",
-              "line": 113,
-              "column": 7
-            },
-            {
-              "title": "TC-007-5: Maksimalna veljavna cena (9999.99) - EC-3",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ee4cc0714ba456031a5f-c2381e00e2a25f3cbdf8",
-              "file": "tc007-price-boundaries.spec.ts",
-              "line": 126,
-              "column": 7
-            },
-            {
-              "title": "TC-007-6: Previsoka cena (10000.00) - EC-4",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ee4cc0714ba456031a5f-0479bd1c2d3bb55592d7",
-              "file": "tc007-price-boundaries.spec.ts",
-              "line": 139,
-              "column": 7
-            },
-            {
-              "title": "TC-007-7: Preveč decimalk (25.999) - EC-5",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ee4cc0714ba456031a5f-4adc1fa9368766fe8e4b",
-              "file": "tc007-price-boundaries.spec.ts",
-              "line": 155,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "tc008-search-boundaries.spec.ts",
-      "file": "tc008-search-boundaries.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "TC-008: Testiranje dolžine iskalnih nizov",
-          "file": "tc008-search-boundaries.spec.ts",
-          "line": 15,
-          "column": 6,
-          "specs": [
-            {
-              "title": "TC-008-1: Prazen niz (\"\") - EC-1",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-d2e996cd9abf3fc3dcf2",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 33,
-              "column": 7
-            },
-            {
-              "title": "TC-008-2: En znak (\"a\") - EC-2",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-218d9671ea961795fad1",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 48,
-              "column": 7
-            },
-            {
-              "title": "TC-008-3: Dva znaka (\"ab\") - EC-2",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-deb580ee1957c82feb0c",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 61,
-              "column": 7
-            },
-            {
-              "title": "TC-008-4: Srednji niz (12 znakov) - EC-3",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-4f1df6ad66b5cd357022",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 74,
-              "column": 7
-            },
-            {
-              "title": "TC-008-5: 99 znakov - EC-4",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-dae2144caab4033c891b",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 88,
-              "column": 7
-            },
-            {
-              "title": "TC-008-6: 100 znakov (meja) - EC-4",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-65f8cb8ac0674700971b",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 102,
-              "column": 7
-            },
-            {
-              "title": "TC-008-7: 101 znakov (prekoračitev) - EC-5",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-437086bb322bbf11ecdd",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 116,
-              "column": 7
-            },
-            {
-              "title": "TC-008-8: SQL injection poskus - EC-6",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-43f9fbc005d4cc670242",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 138,
-              "column": 7
-            },
-            {
-              "title": "TC-008-9: XSS poskus - EC-6",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "a3ea42fe6c9cf09920ec-65c65f227b3e52ebc5f4",
-              "file": "tc008-search-boundaries.spec.ts",
-              "line": 161,
-              "column": 7
-            }
-          ]
-        }
-      ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-11-30T08:49:54.163Z",
-    "duration": 128355.14,
-    "expected": 13,
-    "skipped": 13,
-    "unexpected": 2,
+    "startTime": "2025-11-30T08:57:40.110Z",
+    "duration": 40563.482,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
     "flaky": 0
   }
 }

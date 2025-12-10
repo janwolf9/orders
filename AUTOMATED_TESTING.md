@@ -1,9 +1,8 @@
 # Avtomatizirano Testiranje - Naloga 7
 
 **Avtor:** Jan Wolf  
-**Študijski program:** Magistrski študij  
-**Datum:** December 2024  
-**Maksimalno število točk:** 100
+**Verzija:** 1.12 
+**Datum:** December 2025  
 
 ---
 

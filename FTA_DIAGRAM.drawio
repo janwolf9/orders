@@ -1,0 +1,265 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="26.1.3">
+  <diagram id="fta-tree" name="FTA">
+    <mxGraphModel dx="2302" dy="1941" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="top" value="UPORABNIK NE MORE&#xa;ZAKLJUČITI NAKUPA&#xa;TOP EVENT (IE-01)&#xa;P = 58.14%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff5252;strokeColor=#000000;fontSize=12;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="645" y="-280" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-top" value="OR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#1976d2;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="745" y="-140" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-top-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="top" target="gate-top" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ie02" value="IE-02&#xa;PRIJAVA&#xa;NE DELA&#xa;P = 25%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#64b5f6;strokeColor=#000000;fontSize=11;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="80" y="60" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ie03" value="IE-03&#xa;KOŠARICA&#xa;NE DELUJE&#xa;P = 22.2%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#64b5f6;strokeColor=#000000;fontSize=11;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="400" y="40" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ie06" value="IE-06&#xa;CHECKOUT&#xa;NE DELUJE&#xa;P = 14%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#64b5f6;strokeColor=#000000;fontSize=11;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="690" y="50" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ie04" value="IE-04&#xa;PLAČILO&#xa;NE DELUJE&#xa;P = 13.5%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#64b5f6;strokeColor=#000000;fontSize=11;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="950" y="60" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ie05" value="IE-05&#xa;BACKEND&#xa;NE DELUJE&#xa;P = 5.15%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#64b5f6;strokeColor=#000000;fontSize=11;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="60" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie02" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-top" target="ie02" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie03" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-top" target="ie03" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie06" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-top" target="ie06" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie04" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-top" target="ie04" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie05" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-top" target="ie05" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-ie02" value="OR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#1976d2;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="120" y="178" width="46" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-ie03" value="OR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#1976d2;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="452" y="193" width="46" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-ie06" value="OR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#1976d2;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="742" y="210" width="46" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-ie04" value="OR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#1976d2;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="1002" y="210" width="46" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-ie05" value="OR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#1976d2;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="1320" y="193" width="46" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-ie02-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="ie02" target="gate-ie02" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-ie03-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="ie03" target="gate-ie03" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-ie06-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="ie06" target="gate-ie06" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-ie04-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="ie04" target="gate-ie04" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-ie05-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="ie05" target="gate-ie05" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be01" value="BE-01&#xa;Napačno geslo&#xa;5%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="270" width="70" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be02" value="BE-02&#xa;JWT token expiriran&#xa;10%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ff9800;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="70" y="370" width="90" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be03" value="BE-03&#xa;Session expired&#xa;8%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ff9800;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="140" y="280" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be04" value="BE-04&#xa;Rate limiting&#xa;2%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="240" y="230" width="70" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie02-be01" style="endArrow=none;strokeWidth=2;rounded=0;" parent="1" source="gate-ie02" target="be01" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie02-be02" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie02" target="be02" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie02-be03" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie02" target="be03" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie02-be04" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie02" target="be04" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be05" value="BE-05&#xa;LocalStorage pobrisan&#xa;15%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ef5350;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="285" y="340" width="90" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be06" value="BE-06&#xa;Produkt brez zaloge&#xa;3%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="370" y="408" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be07" value="BE-07&#xa;Količina presega&#xa;4%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="435" y="495" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ie07" value="IE-07&#xa;Race condition&#xa;0.2%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="515" y="330" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie03-be05" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie03" target="be05" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie03-be06" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie03" target="be06" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie03-be07" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie03" target="be07" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie03-ie07" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie03" target="ie07" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-ie07" value="AND" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#388e3c;fontColor=#388e3c;fontStyle=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="550" y="540" width="60" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-ie07-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="ie07" target="gate-ie07" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be08" value="BE-08&#xa;Dvakrat klik&#xa;20%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="460" y="650" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be09" value="BE-09&#xa;Backend no check&#xa;1%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="590" y="650" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie07-be08" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie07" target="be08" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie07-be09" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie07" target="be09" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be10" value="BE-10&#xa;Forma ne prikaže&#xa;2%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="645" y="330" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be11" value="BE-11&#xa;Validacija fail&#xa;5%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="670" y="465" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be12" value="BE-12&#xa;Košarica prazna&#xa;6%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="780" y="465" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be13" value="BE-13&#xa;API timeout&#xa;1%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="810" y="270" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie06-be10" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie06" target="be10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie06-be11" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie06" target="be11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie06-be12" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie06" target="be12" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie06-be13" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie06" target="be13" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be14" value="BE-14&#xa;Gateway down&#xa;0.5%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="840" y="355" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be15" value="BE-15&#xa;Kartica zavrnjena&#xa;8%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ff9800;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="940" y="370" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be16" value="BE-16&#xa;Insufficient funds&#xa;4%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="990" y="470" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be17" value="BE-17&#xa;Stripe timeout&#xa;1%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1100" y="300" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie04-be14" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie04" target="be14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie04-be15" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie04" target="be15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie04-be16" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie04" target="be16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie04-be17" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie04" target="be17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be18" value="BE-18&#xa;MongoDB down&#xa;0.1%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="416" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be19" value="BE-19&#xa;Server crash&#xa;2%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1230" y="425" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be20" value="BE-20&#xa;Rate limit reached&#xa;3%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1320" y="390" width="90" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ie08" value="IE-08&#xa;Memory leak&#xa;0.05%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1400" y="310" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie05-be18" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie05" target="be18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie05-be19" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie05" target="be19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie05-be20" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie05" target="be20" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie05-ie08" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie05" target="ie08" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gate-ie08" value="AND" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#388e3c;fontColor=#388e3c;fontStyle=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1500" y="425" width="60" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-ie08-gate" style="endArrow=none;strokeWidth=2;" parent="1" source="ie08" target="gate-ie08" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be21" value="BE-21&#xa;Memory &gt;90%&#xa;5%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1450" y="535" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be22" value="BE-22&#xa;PM2 fail restart&#xa;1%" style="ellipse;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1630" y="520" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie08-be21" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie08" target="be21" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gate-ie08-be22" style="endArrow=none;strokeWidth=2;" parent="1" source="gate-ie08" target="be22" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="FAULT TREE ANALYSIS - E-Commerce Orders Management System&lt;br&gt;Analiza: Uporabnik ne more zaključiti nakupa&lt;br&gt;Avtor: Jan Wolf" style="text;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="350" y="890" width="420" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-base" value="Osnovni dogodek" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="110" y="970" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-intermediate" value="Vmesni dogodek" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#64b5f6;strokeColor=#000000;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="190" y="970" width="70" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-or" value="OR vrata (vsaj 1)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#1976d2;fontStyle=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="290" y="970" width="60" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-and" value="AND vrata (vsi)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#388e3c;fontColor=#388e3c;fontStyle=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="370" y="970" width="60" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-crit" value="Kritično (&gt;10%)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ef5350;strokeColor=#000000;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="460" y="970" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-high" value="Visoko (5-10%)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ff9800;strokeColor=#000000;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="550" y="970" width="80" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-med" value="Srednje (2-5%)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fdd835;strokeColor=#000000;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="650" y="970" width="80" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-low" value="Nizko (&lt;2%)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#66bb6a;strokeColor=#000000;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="750" y="970" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-box" value="KLJUČNE UGOTOVITVE:&#xa;• Top Event verjetnost: 58.14%&#xa;• Najbolj kritičen: BE-05 (LocalStorage pobrisan) - 15%&#xa;• Najbolj kritična pot: IE-02 → BE-02 (JWT expiriran) - 25%&#xa;• Priporočilo: Backend cart sync + JWT refresh token → Zmanjšanje na 38% (-34%)" style="whiteSpace=wrap;html=1;rounded=1;strokeColor=#f57c00;fillColor=#fff3e0;fontSize=10;fontFamily=Courier New;" parent="1" vertex="1">
+          <mxGeometry x="420" y="1020" width="440" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
